@@ -42,6 +42,9 @@ dependencies:
   pin_code_fields: ^5.1.0 # for Phone Verification
   gradient_text: ^1.0.2 # for Splash Gradient
   flutter_launcher_icons: ^0.8.1
+  http: 0.12.1
+
+
 
 dev_dependencies:
   flutter_test:

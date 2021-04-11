@@ -11,6 +11,24 @@ import 'package:euzzit/view/widgets/edittext/custom_text_field.dart';
 
 class StepOneScreen extends StatelessWidget {
 
+  final _formKey = GlobalKey<FormState>();
+
+  var first_name;
+  var last_name;
+  var email;
+  var phone;
+  var username;
+  var password;
+  var password_confirm;
+
+  final TextEditingController _first_nameController = TextEditingController();
+  final TextEditingController _last_nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _password_confirmController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
 
@@ -70,9 +88,11 @@ class StepOneScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: TextField(
-                          obscureText: true,
-                          keyboardType: TextInputType.text,
-                          obscuringCharacter: "*",
+                          keyboardType: TextInputType.name,
+                          controller: _first_nameController,
+                          onChanged:(value) async {
+                            first_name = value;
+                          },
                           decoration: InputDecoration(
                             hintText: "First Name",
                             border: InputBorder.none,
@@ -111,7 +131,11 @@ class StepOneScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: TextField(
-                          keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.name,
+                          controller: _last_nameController,
+                          onChanged:(value) async {
+                            last_name = value;
+                          },
                           decoration: InputDecoration(
                             hintText: "Last Name",
                             border: InputBorder.none,
@@ -133,43 +157,129 @@ class StepOneScreen extends StatelessWidget {
                   margin: EdgeInsets.only(right: 20, left: 20),
                   padding: EdgeInsets.only(left: 20, right: 10),
                   decoration: BoxDecoration(
-                    color: ColorResources.COLOR_WHITE,
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 10,
-                        offset: Offset(0, 3), // changes position of shadow
-                      ),
-                    ],
-                    border: Border.all(color: ColorResources.COLOR_WHITE_GRAY,width: 2)
+                      color: ColorResources.COLOR_WHITE,
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                      border: Border.all(color: ColorResources.COLOR_WHITE_GRAY,width: 2)
                   ),
                   child: Row(
                     children: [
-                      CountryCodePicker(
-                        onChanged: print,
-                        initialSelection: 'BD',
-                        favorite: ['+88', 'BD'],
-                        showCountryOnly: false,
-                        textStyle: poppinsRegular.copyWith(fontSize: 13,),
-                        showOnlyCountryWhenClosed: false,
-                        alignLeft: false,
-                      ),
                       Expanded(
                         flex: 3,
-                        child: CustomTextField(
-                          hintTxt: Strings.MOBILE_NUMBER,
-                          isPhoneNumber: true,
-                          textInputType: TextInputType.phone,
+                        child: TextField(
+                          keyboardType: TextInputType.emailAddress,
+                          controller: _emailController,
+                          onChanged:(value) async {
+                            email = value;
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Email",
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
                         ),
                       ),
-                      Icon(Icons.phone,color: Colors.deepPurple,),
+                      Icon(Icons.email,color: Colors.deepPurple,),
+//https://euzzitstaging.com.ng/api/v1/auth/register
                     ],
                   ),
                 ),
                 SizedBox(
-                  height: 17,
+                  height: 20,
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 60,
+                  margin: EdgeInsets.only(right: 20, left: 20),
+                  padding: EdgeInsets.only(left: 20, right: 10),
+                  decoration: BoxDecoration(
+                      color: ColorResources.COLOR_WHITE,
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                      border: Border.all(color: ColorResources.COLOR_WHITE_GRAY,width: 2)
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: TextField(
+                          keyboardType: TextInputType.phone,
+                          controller: _phoneController,
+                          onChanged:(value) async {
+                            phone = value;
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Phone Number",
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.phone,color: Colors.deepPurple,),
+//https://euzzitstaging.com.ng/api/v1/auth/register
+                    ],
+                  ),
+                ),
+
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 60,
+                  margin: EdgeInsets.only(right: 20, left: 20),
+                  padding: EdgeInsets.only(left: 20, right: 10),
+                  decoration: BoxDecoration(
+                      color: ColorResources.COLOR_WHITE,
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                      border: Border.all(color: ColorResources.COLOR_WHITE_GRAY,width: 2)
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: TextField(
+                          keyboardType: TextInputType.text,
+                          controller: _usernameController,
+                          onChanged:(value) async {
+                            username = value;
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Username",
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.person_rounded,color: Colors.deepPurple,),
+//https://euzzitstaging.com.ng/api/v1/auth/register
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
                 ),
                 Container(
                   width: double.infinity,
@@ -196,6 +306,11 @@ class StepOneScreen extends StatelessWidget {
                         child: TextField(
                           obscureText: true,
                           obscuringCharacter: "*",
+                          keyboardType: TextInputType.visiblePassword,
+                          controller: _passwordController,
+                          onChanged:(value) async {
+                            password = value;
+                          },
                           decoration: InputDecoration(
                             hintText: "Password",
                             border: InputBorder.none,
