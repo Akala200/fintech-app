@@ -1,4 +1,5 @@
 import 'package:euzzit/view/screens/pin_code.dart';
+import 'package:euzzit/view/screens/pin_transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/utility/colorResources.dart';
 import 'package:euzzit/utility/dimensions.dart';
@@ -15,20 +16,23 @@ import 'package:loading/loading.dart';
 import 'package:loading/indicator/ball_pulse_indicator.dart';
 import 'package:toast/toast.dart';
 
-class SendMoneyScreen1 extends StatefulWidget {
+class TransferScreen1 extends StatefulWidget {
   @override
-  _SendMoneyScreen1State createState() => _SendMoneyScreen1State();
+  _TransferScreen1State createState() => _TransferScreen1State();
 }
 
-class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
+class _TransferScreen1State extends State<TransferScreen1> {
   var amount = '0';
+  var phone;
 
 
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
-    return SendMoneyWidget(title: 'Fund Main Wallet', child: Column(
+    return SendMoneyWidget(title: 'Transfer Within Euzzit', child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
@@ -55,7 +59,7 @@ class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
                 flex: 3,
                 child: TextField(
                   keyboardType: TextInputType.number,
-                  controller: _usernameController,
+                  controller: _amountController,
                   onChanged:(value) async {
                     setState(() {
                       amount = value;
@@ -63,6 +67,50 @@ class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Amount",
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                  ),
+                ),
+              ),
+//https://euzzitstaging.com.ng/api/v1/auth/register
+            ],
+          ),
+        ),
+
+        SizedBox(height: 30.0,),
+
+        Container(
+          width: double.infinity,
+          height: 60,
+          margin: EdgeInsets.only(right: 20, left: 20),
+          padding: EdgeInsets.only(left: 20, right: 10),
+          decoration: BoxDecoration(
+              color: ColorResources.COLOR_WHITE,
+              borderRadius: BorderRadius.all(Radius.circular(50)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 1,
+                  blurRadius: 10,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+              border: Border.all(color: ColorResources.COLOR_WHITE_GRAY,width: 2)
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: TextField(
+                  keyboardType: TextInputType.phone,
+                  controller: _phoneController,
+                  onChanged:(value) async {
+                    setState(() {
+                      phone = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Recipient Phone Number",
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                   ),
@@ -111,7 +159,7 @@ class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      'Deposit',
+                      'Transfer',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -138,6 +186,27 @@ class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
                   ),
                 ],
               ),
+              SizedBox(height: 10.0,),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 35.0),
+                    child: Text(
+                      'Recipient:',
+                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 35.0),
+                    child: Text(
+                      '$phone',
+                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -145,38 +214,15 @@ class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
           child: CustomButton(btnTxt: 'Initiate', onTap: () async {
-            var url = "https://euzzitstaging.com.ng/api/v1/user/transfer/generate_transaction_ref";
             SharedPreferences prefs = await SharedPreferences.getInstance();
             Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
                 overlayColor: Color(0x99E8EAF6));
-            var token =  prefs.getString('accessToken');
-
-            final http.Response response = await http.post(
-              url,
-              headers: <String, String>{
-                'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization': 'Bearer $token',
-
-              },
-              body: jsonEncode(<String, String>{
-                'amount': amount,
-                'type':'deposit',
-                'deposit_wallet': 'main'
-              }),
-            );
-            if (response.statusCode == 200) {
+            await prefs.setString('phone_transfer', phone );
+            await prefs.setString('amount_transfer', amount );
             Loader.hide();
-              var st = jsonDecode(response.body);
-              var transactionRef = st["data"]["transaction_ref"];
-              await prefs.setString('transactionRef', transactionRef);
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => PinScreen()));
-            } else {
-            Loader.hide();
-              var st = jsonDecode(response.body);
-              var message = st["message"];
-              print(response.body);
-            Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-            }
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => PinTransferScreen()));
+
+
           }),
         ),
       ],

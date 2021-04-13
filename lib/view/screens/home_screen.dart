@@ -1,3 +1,4 @@
+import 'package:euzzit/view/screens/merchants.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/provider/promo_provider.dart';
 import 'package:euzzit/utility/colorResources.dart';
@@ -15,6 +16,20 @@ import 'package:euzzit/view/screens/send_money1_screen.dart';
 import 'package:euzzit/view/screens/topup_screen.dart';
 import 'package:euzzit/view/widgets/promo_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:loading/loading.dart';
+import 'package:loading/indicator/ball_pulse_indicator.dart';
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
+
+String firstName;
+String lastName;
+String fullName;
+String accountStatus;
+var balance;
+
 
 class euzzitHomeScreen extends StatefulWidget {
   @override
@@ -22,6 +37,96 @@ class euzzitHomeScreen extends StatefulWidget {
 }
 
 class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
+
+  void getData() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  setState(() {
+    firstName =  prefs.getString('first_name');
+    lastName =  prefs.getString('last_name');
+    accountStatus =  prefs.getString('accountStatus');
+    fullName = firstName + '' + lastName;
+    print(firstName);
+  });
+//accountStatus
+
+  }
+
+
+  void getFreshData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var url = "https://euzzitstaging.com.ng/api/v1/user/profile";
+   var token =  prefs.getString('access_token');
+   print(token);
+    final http.Response response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      var st = jsonDecode(response.body);
+      var referral_link = st["data"]["user"]["referral_link"];
+      var first_name = st["data"]["user"]["first_name"];
+      print(first_name);
+      print(first_name);
+      print(first_name);
+      print(first_name);
+      print(first_name);
+      var last_name = st["data"]["user"]["last_name"];
+      var email = st["data"]["user"]["email"];
+      var phone = st["data"]["user"]["phone"];
+      var username = st["data"]["user"]["username"];
+      var accountStatus = st["data"]["user"]["account_status"];
+      var referalCode = st["data"]["user"]["referral_code"];
+      var accessToken = st["data"]["access_token"];
+      var mainWalletName = st["data"]["user"]["user_wallets"][2]["name"];
+      var mainWalletSlug = st["data"]["user"]["user_wallets"][2]["slug"];
+      var mainWalletBalance = st["data"]["user"]["user_wallets"][2]["balance"];
+      var euzzitCoinName = st["data"]["user"]["user_wallets"][0]["name"];
+      var euzzitCoinSlug = st["data"]["user"]["user_wallets"][0]["slug"];
+      var euzzitCoinBalance = st["data"]["user"]["user_wallets"][0]["balance"];
+      var extraWalletName = st["data"]["user"]["user_wallets"][1]["name"];
+      var extraWalletSlug = st["data"]["user"]["user_wallets"][0]["slug"];
+      var extraWalletBalance = st["data"]["user"]["user_wallets"][0]["balance"];
+      await prefs.setString('referral_link', referral_link );
+      await prefs.setString('referral_link', referral_link );
+      await prefs.setString('first_name', first_name );
+      await prefs.setString('last_name', last_name );
+      await prefs.setString('email', email );
+      await prefs.setString('phone', phone );
+      await prefs.setString('username', username );
+      await prefs.setString('accountStatus', accountStatus );
+      await prefs.setString('referalCode', referalCode );
+      await prefs.setString('accessToken', accessToken);
+      await prefs.setString('mainWalletName', mainWalletName);
+      await prefs.setString('mainWalletSlug', mainWalletSlug);
+      await prefs.setString('mainWalletBalance', mainWalletBalance);
+      await prefs.setString('euzzitCoinName', euzzitCoinName);
+      await prefs.setString('euzzitCoinSlug', euzzitCoinSlug);
+      await prefs.setString('euzzitCoinBalance', euzzitCoinBalance);
+      await prefs.setString('extraWalletName', extraWalletName);
+      await prefs.setString('extraWalletSlug', extraWalletSlug);
+      await prefs.setString('extraWalletBalance', extraWalletBalance);
+    }
+    setState(() {
+      firstName =  prefs.getString('first_name');
+      lastName =  prefs.getString('last_name');
+      accountStatus =  prefs.getString('accountStatus');
+      fullName = firstName + '' + lastName;
+      balance = prefs.getString('mainWalletBalance');
+      print(firstName);
+    });
+//accountStatus
+
+  }
+  void initState() {
+    super.initState();
+    getData();
+    getFreshData();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,8 +206,14 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Deji Johnson', style: poppinsRegular.copyWith(color: ColorResources.COLOR_WHITE)),
-                                  Text('2349089876543', style: poppinsRegular.copyWith(color: ColorResources.COLOR_VERY_LIGHT_GRAY)),
+                                  Row(
+                                    children: [
+                                      Text( '$firstName' != null ? '$firstName': 'Null', style: poppinsRegular.copyWith(color: ColorResources.COLOR_WHITE)),
+                                      SizedBox(width: 10.0,),
+                                      Text('$lastName' != null ? '$lastName': 'Null', style: poppinsRegular.copyWith(color: ColorResources.COLOR_WHITE)),
+                                    ],
+                                  ),
+                                  Text('$accountStatus' != null ? '$accountStatus': 'Null', style: poppinsRegular.copyWith(color: ColorResources.COLOR_VERY_LIGHT_GRAY)),
                                 ],
                               ),
                             ),
@@ -131,8 +242,8 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(Strings.MY_BALANCE, style: poppinsRegular.copyWith(color: ColorResources.COLOR_DIM_GRAY)),
-                                  Text(Strings.BALANCE_DOLLER, style: poppinsRegular.copyWith(color: ColorResources.COLOR_DARK_ORCHID)),
+                                  Text("Main Balance", style: poppinsRegular.copyWith(color: ColorResources.COLOR_DIM_GRAY)),
+                                  Text('$balance' != null ? '$balance': '0', style: poppinsRegular.copyWith(color: ColorResources.COLOR_DARK_ORCHID)),
                                 ],
                               ),
                             ),
@@ -151,7 +262,7 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SendMoneyScreen1()));
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => MerchantScreen()));
                                       },
                                       child: IconTitleColumnButton(iconUrl: 'assets/Icon/team.png', title: 'Merchants'),
                                     ),

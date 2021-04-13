@@ -25,10 +25,11 @@ createAccount(email, password, first_name, last_name, username, phone ) async {
     }),
   );
 
-  if (response.statusCode == 201) {
+  if (response.statusCode == 200) {
     var st = jsonDecode(response.body);
-    print(st["message"]);
-
+    print(st);
+    var status = st["status"];
+    return status;
   } else {
     var st = jsonDecode(response.body);
     var status = st["message"];

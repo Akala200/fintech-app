@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:euzzit/view/screens/step/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/data/repository/onboarding_repo.dart';
@@ -101,7 +102,8 @@ class _euzzitOnBoardingScreenState extends State<euzzitOnBoardingScreen> {
                     ),
                     onPressed: () {
                       Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => WalletStartupScreen()));
+                          builder: (context) => LoginScreen()));
+                    //  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => WalletStartupScreen()));
                     },
                   ),
                 ),

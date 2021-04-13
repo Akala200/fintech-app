@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:euzzit/view/screens/create_profile.dart';
 import 'package:euzzit/view/screens/transfer.dart';
 import 'package:euzzit/view/screens/withdraw.dart';
 import 'package:flutter/material.dart';
@@ -27,14 +28,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-class SavingAccountScreen extends StatefulWidget {
+class MerchantScreen extends StatefulWidget {
   @override
-  _SavingAccountScreenState createState() => _SavingAccountScreenState();
+  _MerchantScreenState createState() => _MerchantScreenState();
 }
 
-class _SavingAccountScreenState extends State<SavingAccountScreen> {
+class _MerchantScreenState extends State<MerchantScreen> {
   int bannerIndex = 0;
   var balance;
+  var walletMain;
 
   void getFreshData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -44,7 +46,8 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
     final http.Response response = await http.get(
       url,
       headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
     );
@@ -52,10 +55,6 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
       var st = jsonDecode(response.body);
       var referral_link = st["data"]["user"]["referral_link"];
       var first_name = st["data"]["user"]["first_name"];
-      print(first_name);
-      print(first_name);
-      print(first_name);
-      print(first_name);
       print(first_name);
       var last_name = st["data"]["user"]["last_name"];
       var email = st["data"]["user"]["email"];
@@ -94,17 +93,17 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
       await prefs.setString('extraWalletBalance', extraWalletBalance);
     }
     setState(() {
-      balance = prefs.getString('mainWalletBalance');
+      balance = prefs.getString('extraWalletBalance');
+      walletMain = prefs.getString('extraWalletName');
     });
 //accountStatus
 
   }
 
-  _fetchListItems() async {
+  _fetchListItems<List>() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var url = "https://euzzitstaging.com.ng/api/v1/user/transactions/wallets";
     var token =  prefs.getString('accessToken');
-
     final http.Response response = await http.get(
       url,
       headers: <String, String>{
@@ -112,13 +111,12 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
         'Authorization': 'Bearer $token',
       },
     );
-    print(response.body);
-    if (response.statusCode == 200) {
-    var st = jsonDecode(response.body);
-    print(response.body);
 
-    List rawFavouriteList = await st["data"][3]["history"];
-    return rawFavouriteList;
+
+    if (response.statusCode == 200) {
+      var st = jsonDecode(response.body);
+      List rawFavouriteList = await st["data"][0]["history"];
+      return rawFavouriteList;
     }
   }
 
@@ -159,7 +157,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Main Balance', style: poppinsRegular.copyWith(color: ColorResources.COLOR_WHITE, fontWeight: FontWeight.bold, fontSize: 15.0)),
+                            Text('$walletMain', style: poppinsRegular.copyWith(color: ColorResources.COLOR_WHITE, fontWeight: FontWeight.bold, fontSize: 15.0)),
                             Text('$balance' != null ? '$balance': '0', style: poppinsRegular.copyWith(color: ColorResources.COLOR_WHITE, fontWeight: FontWeight.bold, fontSize: 15.0)),
                           ],
                         ),
@@ -171,11 +169,9 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                         height: 88,
                         child: Row(
                           children: [
-                            IconTitleButton(iconUrl: 'assets/Icon/add money.png', title: 'Fund Wallet',  widget: SendMoneyScreen1()),
+                            IconTitleButton(iconUrl: 'assets/Icon/withdraw.png', title: 'Create Profile', widget: CreateProfileScreen()),
                             SizedBox(width: 15),
-                            IconTitleButton(iconUrl: 'assets/Icon/withdraw.png', title: 'Transfer', widget: TransferScreen1(),),
-                            SizedBox(width: 15),
-                            IconTitleButton(iconUrl: 'assets/Icon/add money.png', title: 'Withdraw',  widget: WithdrawScreen1()),
+                            IconTitleButton(iconUrl: 'assets/Icon/add money.png', title: 'Create Service',  widget: WithdrawScreen1()),
                           ],
                         ),
                       ),
@@ -183,7 +179,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                       Padding(
                         padding: EdgeInsets.only(left: 20),
                         child: Text(
-                          'Wallet Transaction History',
+                          'Wallet History',
                           style: poppinsSemiBold.copyWith(color: ColorResources.COLOR_CHARCOAL),
                         ),
                       ),
@@ -191,39 +187,58 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                       SizedBox(height: 15),
                       SizedBox(height: 15),
                       SizedBox(height: 15),
-                     Container(
-                       child: FutureBuilder(
-                           future: _fetchListItems(),
-                           // ignore: missing_return
-                           builder: (context, AsyncSnapshot snapshot) {
-                             if (!snapshot.hasData) {
-                               return Center(child: CircularProgressIndicator());
-                             } else {
-                               Container(
-                                   child: ListView.builder(
-                                       itemCount: snapshot.data.length,
-                                       scrollDirection: Axis.horizontal,
-                                       itemBuilder: (BuildContext context, int index) {
-                                         return Row(
-                                           children: [
-                                            Column(
-                                              children: [
-                                                Text('${snapshot.data[index].amount}', style: TextStyle(color: Colors.black, fontSize: 12.0),),
-                                                Text('${snapshot.data[index].type}', style: TextStyle(color: Colors.black, fontSize: 12.0),)
-                                              ],
-                                            ),
-                                             Column(
-                                               children: [
-                                                 Text('${snapshot.data[index].description}', style: TextStyle(color: Colors.black, fontSize: 12.0),),
-                                                 Text('${new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(snapshot.data[index].created_at)}', style: TextStyle(color: Colors.black, fontSize: 12.0),)
-                                               ],
-                                             )
-                                           ],
-                                         );
-                                       }));
-                             }
-                           }),
-                     )
+                      Container(
+                        child: FutureBuilder<dynamic>(
+                            future: _fetchListItems(),
+                            // ignore: missing_return
+                            builder: (context, AsyncSnapshot snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(child: CircularProgressIndicator());
+                              }else if (snapshot.hasError) {
+                                return Container(
+                                  child: Center(child: Text('No Data', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),)),
+                                );
+                              } else {
+                              return  Container(
+                                  width: double.infinity,
+                                  height: 600.0,
+                                  child: ListView.builder(
+                                        itemCount: snapshot.data.length,
+                                        scrollDirection: Axis.vertical,
+                                        itemBuilder: (BuildContext context, int index) {
+                                          return Column(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 35.0, bottom: 35.0, right: 35.0),
+                                                child: Row(
+                                                  children: [
+                                                   Column(
+                                                     children: [
+                                                       Row(
+                                                         children: [
+                                                           Text(snapshot.data[index]["amount"], style: TextStyle(color: Colors.black, fontSize: 12.0),),
+                                                           SizedBox(height: 14.0,),
+                                                           Text('${snapshot.data[index]["type"]}', style: TextStyle(color: Colors.black, fontSize: 12.0),)
+                                                         ],
+                                                       ),
+                                                       Row(
+                                                         children: [
+                                                           Text('${snapshot.data[index]["description"]}', style: TextStyle(color: Colors.black, fontSize: 12.0),),
+                                                           SizedBox(height: 14.0,),
+                                                           Text('${new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(snapshot.data[index]["created_at"])}', style: TextStyle(color: Colors.black, fontSize: 12.0),)
+                                                         ],
+                                                       )
+                                                     ],
+                                                   )
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }));
+                              }
+                            }),
+                      )
                     ],
                   ),
                 )

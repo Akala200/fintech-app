@@ -43,6 +43,15 @@ dependencies:
   gradient_text: ^1.0.2 # for Splash Gradient
   flutter_launcher_icons: ^0.8.1
   http: 0.12.1
+  bs_overlay_loader: ^0.0.1
+  connectivity: 2.0.2
+  loading: ^1.0.2
+  flutter_overlay_loader: 0.0.2
+  alert: 1.0.1
+  toast: ^0.1.5
+  dropdown_formfield: ^0.1.3
+  font_awesome_flutter: 8.12.0
+
 
 
 

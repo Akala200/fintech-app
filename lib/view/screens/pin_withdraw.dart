@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:euzzit/view/screens/saving_account_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:euzzit/utility/colorResources.dart';
 import 'package:euzzit/utility/dimensions.dart';
@@ -21,12 +23,12 @@ import 'package:loading/indicator/ball_pulse_indicator.dart';
 import 'package:toast/toast.dart';
 
 
-class StepTwoScreen extends StatefulWidget {
+class WithdrawPinScreen extends StatefulWidget {
   @override
-  _StepTwoScreenState createState() => _StepTwoScreenState();
+  _WithdrawPinScreenState createState() => _WithdrawPinScreenState();
 }
 
-class _StepTwoScreenState extends State<StepTwoScreen> {
+class _WithdrawPinScreenState extends State<WithdrawPinScreen> {
   String currentText = '';
   var onTapRecognizer;
   var code;
@@ -36,7 +38,7 @@ class _StepTwoScreenState extends State<StepTwoScreen> {
   bool hasError = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
-
+  var ref;
   @override
   void initState() {
     onTapRecognizer = TapGestureRecognizer()
@@ -45,6 +47,16 @@ class _StepTwoScreenState extends State<StepTwoScreen> {
       };
     errorController = StreamController<ErrorAnimationType>();
     super.initState();
+
+    void getFreshData() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      setState(() {
+        ref =  prefs.getString('transactionRef');
+
+      });
+//accountStatus
+
+    }
   }
 
   @override
@@ -62,32 +74,20 @@ class _StepTwoScreenState extends State<StepTwoScreen> {
         child: SafeArea(
           child: Column(
             children: [
-            Container(
-            height: 50,
-            width: MediaQuery.of(context).size.width,
-            child: Stack(children: [
-              IconButton(
-                icon: Icon(Icons.chevron_left, size: 30, color: Colors.black),
-                onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => StepOneScreen())),
-              ),
-            ]),
-          ),
               Container(
+                height: 50,
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 3.0,
-                margin: EdgeInsets.only(left: 25, right: 25, top: 15, bottom: 10),
-                padding: EdgeInsets.all(25),
-                child: Hero(
-                  tag: 3,
-                  child: Image.asset(
-                    'assets/Illustration/verification pg.png',
-                    fit: BoxFit.scaleDown,
+                child: Stack(children: [
+                  IconButton(
+                    icon: Icon(Icons.chevron_left, size: 30, color: Colors.black),
+                    onPressed: () =>      Navigator.pop(context),
                   ),
-                ),
+                ]),
               ),
+              SizedBox(height: 150.0,),
               Center(
                 child: Text(
-                  Strings.VERIFICATION,
+                  'Transaction Authorization',
                   style: poppinsRegular.copyWith(
                     fontSize: 17,
                   ),
@@ -101,7 +101,7 @@ class _StepTwoScreenState extends State<StepTwoScreen> {
                 padding: EdgeInsets.only(left: 30, right: 20),
                 alignment: Alignment.center,
                 child: Text(
-                  Strings.ENTER_4_DIGIT,
+                  'Input your pin to authorize the transaction before it is approved',
                   textAlign: TextAlign.center,
                   style: montserratRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
                 ),
@@ -117,7 +117,7 @@ class _StepTwoScreenState extends State<StepTwoScreen> {
                     child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
                         child: PinCodeTextField(
-                          length: 5,
+                          length: 4,
                           appContext: context,
                           obscureText: false,
                           keyboardType: TextInputType.number,
@@ -150,35 +150,6 @@ class _StepTwoScreenState extends State<StepTwoScreen> {
                             setState(() {
                               code = v;
                             });
-                            SharedPreferences prefs = await SharedPreferences.getInstance();
-                           var phone =  prefs.getString('phone');
-                            print(phone);
-                            print(code);
-                            var url = "https://euzzitstaging.com.ng/api/v1/auth/activate_account";
-                            Loading(indicator: BallPulseIndicator(), size: 100.0,color: Colors.deepPurple);// iOS
-                            final http.Response response = await http.post(
-                              url,
-                              headers: <String, String>{
-                                'Content-Type': 'application/json; charset=UTF-8',
-                              },
-                              body: jsonEncode(<String, String>{
-                                'phone': phone,
-                                'code': v
-                              }),
-                            );
-
-                            if (response.statusCode == 200) {
-                              var st = jsonDecode(response.body);
-                              print(response.body);
-                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => WalletStartupScreen()));
-                            } else {
-                              var st = jsonDecode(response.body);
-                              var message = st["message"];
-                              print(response.body);
-                              print(response.body);
-                              Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-
-                            }
                           },
                           onChanged: (value) {
                             print(value);
@@ -207,30 +178,63 @@ class _StepTwoScreenState extends State<StepTwoScreen> {
                   right: Dimensions.MARGIN_SIZE_DEFAULT,
                 ),
                 child: CustomButton(
-                  btnTxt: Strings.CONTINUE,
+                  btnTxt: 'Authorize',
                   onTap: () async {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
-                    var phone =  prefs.getString('phone');
-                    print(phone);
                     print(code);
+                    var token =  prefs.getString('accessToken');
+
                     var url = "https://euzzitstaging.com.ng/api/v1/auth/activate_account";
-                    Loading(indicator: BallPulseIndicator(), size: 100.0,color: Colors.deepPurple);// iOS
+                    var url1 = "https://euzzitstaging.com.ng/api/v1/user/transfer/withdraw_fund";
+
+                    Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
+                        overlayColor: Color(0x99E8EAF6));
                     final http.Response response = await http.post(
                       url,
                       headers: <String, String>{
                         'Content-Type': 'application/json; charset=UTF-8',
+                        'Authorization': 'Bearer $token',
                       },
                       body: jsonEncode(<String, String>{
-                        'phone': phone,
-                        'code': code
+                        'phone': code,
+                        'code': code,
                       }),
                     );
 
                     if (response.statusCode == 200) {
-                      var st = jsonDecode(response.body);
-                      print(response.body);
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => WalletStartupScreen()));
+                      var token =  prefs.getString('accessToken');
+                      var bank_id =  prefs.getString('bank_id');
+                      var accountNumber_withdraw =  prefs.getString('accountNumber_withdraw');
+                      var amount_withdraw =  prefs.getString('amount_withdraw');
+
+                      final http.Response response = await http.post(
+                        url1,
+                        headers: <String, String>{
+                          'Content-Type': 'application/json; charset=UTF-8',
+                          'Authorization': 'Bearer $token',
+
+                        },
+                        body: jsonEncode(<String, String>{
+                          'amount': amount_withdraw,
+                          'wallet': 'main',
+                          'account_no': accountNumber_withdraw,
+                          'bank_id': bank_id
+                        }),
+                      );
+                      if (response.statusCode == 200) {
+                        Loader.hide();
+                        var st = jsonDecode(response.body);
+                        Toast.show('Transaction Successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SavingAccountScreen()));
+                      } else {
+                        Loader.hide();
+                        var st = jsonDecode(response.body);
+                        var message = st["message"];
+                        print(response.body);
+                        Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                      }
                     } else {
+                      Loader.hide();
                       var st = jsonDecode(response.body);
                       var message = st["message"];
                       print(response.body);
@@ -240,46 +244,7 @@ class _StepTwoScreenState extends State<StepTwoScreen> {
                   },
                 ),
               ),
-              SizedBox(height: 20.0,),
-              GestureDetector(
-                onTap: () async {
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                 // var phone =  prefs.getString('phone');
-                  var phone = '08180009938';
-                  print(phone);
-                  print(code);
-                  var url = "https://euzzitstaging.com.ng/api/v1/auth/resend_code";
-                  Loading(indicator: BallPulseIndicator(), size: 100.0,color: Colors.deepPurple);// iOS
-                  final http.Response response = await http.post(
-                    url,
-                    headers: <String, String>{
-                      'Content-Type': 'application/json; charset=UTF-8',
-                    },
-                    body: jsonEncode(<String, String>{
-                      'phone': phone,
-                    }),
-                  );
 
-                  if (response.statusCode == 200) {
-                    var st = jsonDecode(response.body);
-                    print(response.body);
-                  } else {
-                    var st = jsonDecode(response.body);
-                    var message = st["message"];
-                    print(response.body);
-                    Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-
-                  }
-                },
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 15),
-                  child: Center(
-                      child: Text(
-                  'Re-send code',
-                    style: poppinsRegular,
-                  )),
-                ),
-              )
             ],
           ),
         ),

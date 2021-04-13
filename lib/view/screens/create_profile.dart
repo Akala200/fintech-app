@@ -19,25 +19,48 @@ import 'package:loading/loading.dart';
 import 'package:loading/indicator/ball_pulse_indicator.dart';
 import 'package:toast/toast.dart';
 
-class StepOneScreen extends StatelessWidget {
+class CreateProfileScreen extends StatefulWidget {
 
+  @override
+  _CreateProfileScreenState createState() => _CreateProfileScreenState();
+}
+
+class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  var first_name;
-  var last_name;
-  var email;
-  var phone;
-  var username;
-  var password;
-  var password_confirm;
+  var name;
 
-  final TextEditingController _first_nameController = TextEditingController();
-  final TextEditingController _last_nameController = TextEditingController();
+  var reg_no;
+
+  var cac_reg_no;
+
+  var category;
+
+  var address;
+
+  var email;
+
+  var phone;
+
+  var referrer;
+
+
+  final TextEditingController _nameController = TextEditingController();
+
+  final TextEditingController _reg_noController = TextEditingController();
+
   final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _password_confirmController = TextEditingController();
+
+  final TextEditingController _cac_reg_noController = TextEditingController();
+
+  final TextEditingController _categoryController = TextEditingController();
+
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _referrerController = TextEditingController();
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,29 +73,31 @@ class StepOneScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                SizedBox(
+                Container(
                   height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  child: Stack(children: [
+                    IconButton(
+                      icon: Icon(Icons.chevron_left, size: 30, color: Colors.black),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ]),
+                ),
+                SizedBox(
+                  height: 20,
                 ),
                 Center(
                   child: Text(
-                    Strings.REGISTRATION,
+                    'Create Profile',
                     style: poppinsRegular.copyWith(fontSize: 25),
                   ),
                 ),
                 SizedBox(
                   height: 10,
                 ),
-                Container(
-                  margin: EdgeInsets.only(left: 20, right: 20),
-                  padding: EdgeInsets.only(left: 30, right: 20),
-                  child: Text(
-                    Strings.ENTER_YOUR_MOBILE,
-                    textAlign: TextAlign.center,
-                    style: montserratRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
-                  ),
-                ),
+
                 SizedBox(
-                  height: 60,
+                  height: 30,
                 ),
 
                 Container(
@@ -99,18 +124,17 @@ class StepOneScreen extends StatelessWidget {
                         flex: 3,
                         child: TextField(
                           keyboardType: TextInputType.name,
-                          controller: _first_nameController,
+                          controller: _nameController,
                           onChanged:(value) async {
-                            first_name = value;
+                            name = value;
                           },
                           decoration: InputDecoration(
-                            hintText: "First Name",
+                            hintText: "Name",
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
                           ),
                         ),
                       ),
-                      Icon(Icons.person,color: Colors.deepPurple,),
 //https://euzzitstaging.com.ng/api/v1/auth/register
                     ],
                   ),
@@ -142,18 +166,59 @@ class StepOneScreen extends StatelessWidget {
                         flex: 3,
                         child: TextField(
                           keyboardType: TextInputType.name,
-                          controller: _last_nameController,
+                          controller: _reg_noController,
                           onChanged:(value) async {
-                            last_name = value;
+                            reg_no = value;
                           },
                           decoration: InputDecoration(
-                            hintText: "Last Name",
+                            hintText: "Reg Number",
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
                           ),
                         ),
                       ),
-                      Icon(Icons.person,color: Colors.deepPurple,),
+
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 60,
+                  margin: EdgeInsets.only(right: 20, left: 20),
+                  padding: EdgeInsets.only(left: 20, right: 10),
+                  decoration: BoxDecoration(
+                      color: ColorResources.COLOR_WHITE,
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                      border: Border.all(color: ColorResources.COLOR_WHITE_GRAY,width: 2)
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: TextField(
+                          keyboardType: TextInputType.name,
+                          controller: _categoryController,
+                          onChanged:(value) async {
+                            category = value;
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Category",
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
+                        ),
+                      ),
 
                     ],
                   ),
@@ -196,7 +261,6 @@ class StepOneScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Icon(Icons.email,color: Colors.deepPurple,),
 //https://euzzitstaging.com.ng/api/v1/auth/register
                     ],
                   ),
@@ -239,7 +303,6 @@ class StepOneScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Icon(Icons.phone,color: Colors.deepPurple,),
 //https://euzzitstaging.com.ng/api/v1/auth/register
                     ],
                   ),
@@ -272,18 +335,17 @@ class StepOneScreen extends StatelessWidget {
                         flex: 3,
                         child: TextField(
                           keyboardType: TextInputType.text,
-                          controller: _usernameController,
+                          controller: _addressController,
                           onChanged:(value) async {
-                            username = value;
+                            address = value;
                           },
                           decoration: InputDecoration(
-                            hintText: "Username",
+                            hintText: "Address",
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
                           ),
                         ),
                       ),
-                      Icon(Icons.person_rounded,color: Colors.deepPurple,),
 //https://euzzitstaging.com.ng/api/v1/auth/register
                     ],
                   ),
@@ -314,21 +376,60 @@ class StepOneScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: TextField(
-                          obscureText: true,
-                          obscuringCharacter: "*",
-                          keyboardType: TextInputType.visiblePassword,
-                          controller: _passwordController,
+                          keyboardType: TextInputType.text,
+                          controller: _cac_reg_noController,
                           onChanged:(value) async {
-                            password = value;
+                            cac_reg_no = value;
                           },
                           decoration: InputDecoration(
-                            hintText: "Password",
+                            hintText: "CAC",
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
                           ),
                         ),
                       ),
-                      Icon(Icons.lock,color: Colors.deepPurple,),
+
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 60,
+                  margin: EdgeInsets.only(right: 20, left: 20),
+                  padding: EdgeInsets.only(left: 20, right: 10),
+                  decoration: BoxDecoration(
+                      color: ColorResources.COLOR_WHITE,
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                      border: Border.all(color: ColorResources.COLOR_WHITE_GRAY,width: 2)
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: TextField(
+                          keyboardType: TextInputType.name,
+                          controller: _referrerController,
+                          onChanged:(value) async {
+                            referrer = value;
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Referrer Code",
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
+                        ),
+                      ),
 
                     ],
                   ),
@@ -338,24 +439,28 @@ class StepOneScreen extends StatelessWidget {
                 ),
                 Container(
                   margin: EdgeInsets.only(bottom: 30,left: 15,right: 15),
-                  child: CustomButton(btnTxt: Strings.CONTINUE,onTap: () async {
+                  child: CustomButton(btnTxt: 'Create Profile',onTap: () async {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
-                    var url = "https://euzzitstaging.com.ng/api/v1/auth/register";
+                    var token =  prefs.getString('access_token');
+
+                    var url = "https://euzzitstaging.com.ng/api/v1/user/merchant/profile";
                     Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
                         overlayColor: Color(0x99E8EAF6));
                     final http.Response response = await http.post(
                       url,
                       headers: <String, String>{
                         'Content-Type': 'application/json; charset=UTF-8',
+                        'Authorization': 'Bearer $token',
                       },
                       body: jsonEncode(<String, String>{
-                        'first_name': first_name,
-                        'last_name': last_name,
+                        'name': name,
+                        'reg_no': reg_no,
                         'email': email,
                         'phone': phone,
-                        'username': username,
-                        'password': password,
-                        'password_confirmation': password
+                        'category': category,
+                        'cac_reg_no': cac_reg_no,
+                        'referrer_code': referrer,
+                        'address': address
                       }),
                     );
                     Loader.hide();
@@ -364,37 +469,27 @@ class StepOneScreen extends StatelessWidget {
                       print(st);
                       var status = st["status"];
                       var referral_link = st["data"]["referral_link"];
-                      await prefs.setString('firstName', first_name );
-                      await prefs.setString('lastName', last_name );
+                      await prefs.setString('name', name );
+                      await prefs.setString('reg_no', reg_no );
                       await prefs.setString('email', email );
                       await prefs.setString('phone', phone );
-                      await prefs.setString('referral_link', referral_link );
-                      await prefs.setString('referral_link', referral_link );
+                      await prefs.setString('referrer_code', referrer );
+                      await prefs.setString('address', address );
+                      await prefs.setString('category', category );
                       print(status);
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => StepTwoScreen()));
+                      Toast.show("User already Exists", context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
+                      Navigator.pop(context);
                     } else {
-                      Loader.hide();
+                      print(response.body);
+                      print(token);
                       Toast.show("User already Exists", context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
                     }
 
-                    },),
+                  },),
                 ),
                 SizedBox(
                   height: 5,
                 ),
-                Container(
-                  child: GestureDetector(
-                    onTap: (){
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => LoginScreen()));
-                    },
-                    child: Center(
-                      child: Text(
-                        "Already have an account? Login", style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                )
               ],
             ),
           ),

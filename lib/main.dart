@@ -1,3 +1,4 @@
+import 'package:euzzit/view/screens/startup_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:euzzit/provider/charity_provider.dart';
@@ -8,7 +9,19 @@ import 'package:euzzit/provider/promo_provider.dart';
 import 'package:euzzit/provider/step_provider.dart';
 import 'package:euzzit/utility/colorResources.dart';
 import 'package:euzzit/view/screens/splash_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'di_container.dart' as di;
+var token;
+
+Future<void> start() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var token =  prefs.getString('accessToken');
+  if(token == null){
+    SplashScreenWallet();
+  } else{
+    WalletStartupScreen();
+  }
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
