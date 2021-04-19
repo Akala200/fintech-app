@@ -31,8 +31,8 @@ class PromoWidget extends StatelessWidget {
               children: [
                 Expanded(child: Image.asset(
                   promo.imageUrl,
-                  width: 42,
-                  height: 35,
+                  width: 60,
+                  height: 50,
                 )),
                 Expanded(
                   flex: 3,
@@ -41,16 +41,12 @@ class PromoWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(promo.promoTitle, style: poppinsRegular.copyWith(fontSize: 16, color: ColorResources.COLOR_WHITE)),
-                      Text(promo.promosubTitle, style: montserratSemiBold.copyWith(
-                        fontSize: Dimensions.FONT_SIZE_SMALL,
-                        color: ColorResources.COLOR_VERY_LIGHT_GRAY,
-                      )),
                     ],
                   ),
                 )
               ],
             ),
-          )
+          ),
         ],
       ),
     );

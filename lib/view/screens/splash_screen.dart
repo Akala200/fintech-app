@@ -15,15 +15,7 @@ class SplashScreenWallet extends StatelessWidget {
     return Scaffold(
       backgroundColor: ColorResources.COLOR_BACKGROUND,
       body: Center(
-        child: GradientText(
-          Strings.euzzit,
-          gradient: LinearGradient(colors: [
-            ColorResources.COLOR_ROYAL_BLUE,
-            ColorResources.COLOR_ROYAL_BLUE,
-            ColorResources.COLOR_DARK_ORCHID,
-          ]),
-          style: poppinsBold.copyWith(fontSize: 50),
-        ),
+        child:   Image.asset('assets/Icon/logo.png', width: 400, height: 400),
       ),
     );
   }

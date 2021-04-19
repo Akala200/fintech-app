@@ -5,19 +5,22 @@ import 'package:euzzit/utility/style.dart';
 class CustomAppBar extends StatelessWidget {
   final String title;
   final Color color;
-  CustomAppBar({@required this.title, this.color = ColorResources.COLOR_GRAY});
+  CustomAppBar({@required this.title, @required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
+      height: 80,
       width: MediaQuery.of(context).size.width,
       child: Stack(children: [
-        IconButton(
-          icon: Icon(Icons.chevron_left, size: 25, color: color),
-          onPressed: () => Navigator.of(context).pop(),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: IconButton(
+            icon: Icon(Icons.chevron_left, size: 40, color: color),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
-        Center(child: Text(title, style: montserratSemiBold.copyWith(color: color))),
+        Center(child: Text(title, style: TextStyle(color: color, fontSize: 18.0))),
       ]),
     );
   }

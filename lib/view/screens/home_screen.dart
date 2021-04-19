@@ -1,4 +1,13 @@
+import 'package:euzzit/view/screens/airtime.dart';
+import 'package:euzzit/view/screens/cabletv.dart';
+import 'package:euzzit/view/screens/coin.dart';
+import 'package:euzzit/view/screens/coming_soon.dart';
+import 'package:euzzit/view/screens/databundle.dart';
+import 'package:euzzit/view/screens/education.dart';
+import 'package:euzzit/view/screens/electricity.dart';
 import 'package:euzzit/view/screens/merchants.dart';
+import 'package:euzzit/view/screens/send_fund.dart';
+import 'package:euzzit/view/screens/withdraw.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/provider/promo_provider.dart';
 import 'package:euzzit/utility/colorResources.dart';
@@ -7,22 +16,12 @@ import 'package:euzzit/utility/strings.dart';
 import 'package:euzzit/utility/style.dart';
 import 'package:euzzit/view/screens/pay_screen.dart';
 import 'package:euzzit/view/screens/saving_account_screen.dart';
-import 'package:euzzit/view/screens/cashback_screen.dart';
-import 'package:euzzit/view/screens/charity_screen.dart';
-import 'package:euzzit/view/screens/e_shopping_screen.dart';
-import 'package:euzzit/view/screens/gift_screen.dart';
-import 'package:euzzit/view/screens/request_screen.dart';
 import 'package:euzzit/view/screens/send_money1_screen.dart';
-import 'package:euzzit/view/screens/topup_screen.dart';
 import 'package:euzzit/view/widgets/promo_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:loading/loading.dart';
-import 'package:loading/indicator/ball_pulse_indicator.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 
 String firstName;
 String lastName;
@@ -87,8 +86,8 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
       var euzzitCoinSlug = st["data"]["user"]["user_wallets"][0]["slug"];
       var euzzitCoinBalance = st["data"]["user"]["user_wallets"][0]["balance"];
       var extraWalletName = st["data"]["user"]["user_wallets"][1]["name"];
-      var extraWalletSlug = st["data"]["user"]["user_wallets"][0]["slug"];
-      var extraWalletBalance = st["data"]["user"]["user_wallets"][0]["balance"];
+      var extraWalletSlug = st["data"]["user"]["user_wallets"][1]["slug"];
+      var extraWalletBalance = st["data"]["user"]["user_wallets"][1]["balance"];
       await prefs.setString('referral_link', referral_link );
       await prefs.setString('referral_link', referral_link );
       await prefs.setString('first_name', first_name );
@@ -136,7 +135,7 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
             tag: 7,
             child: Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
+              height: 500.0,
               child: Image.asset(
                 'assets/Illustration/Untitled-1.png',
                 width: MediaQuery.of(context).size.width,
@@ -153,7 +152,7 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(Strings.euzzit, style: poppinsBold.copyWith(fontSize: 25, color: ColorResources.COLOR_WHITE)),
+                      Container(child: Image.asset('assets/Icon/white.png', width: 120.0, height: 80.0,),),
                       Stack(
                         overflow: Overflow.visible,
                         children: [
@@ -189,39 +188,7 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
                     physics: BouncingScrollPhysics(),
                     children: [
                       Container(
-                        padding: EdgeInsets.only(left: 20, top: 20),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: Image.asset(
-                                'assets/images/person1.png',
-                                width: Dimensions.PROFILE_WIDTH,
-                                height: Dimensions.PROFILE_HEIGHT,
-                                fit: BoxFit.scaleDown,
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.only(left: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text( '$firstName' != null ? '$firstName': 'Null', style: poppinsRegular.copyWith(color: ColorResources.COLOR_WHITE)),
-                                      SizedBox(width: 10.0,),
-                                      Text('$lastName' != null ? '$lastName': 'Null', style: poppinsRegular.copyWith(color: ColorResources.COLOR_WHITE)),
-                                    ],
-                                  ),
-                                  Text('$accountStatus' != null ? '$accountStatus': 'Null', style: poppinsRegular.copyWith(color: ColorResources.COLOR_VERY_LIGHT_GRAY)),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 180,
+                        height: 130,
                         margin: EdgeInsets.all(30),
                         decoration: BoxDecoration(
                           color: ColorResources.COLOR_WHITE,
@@ -237,18 +204,59 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
                         ),
                         child: Column(
                           children: [
-                            Container(
-                              padding: EdgeInsets.only(left: 20, top: 19, right: 22, bottom: 11),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Main Balance", style: poppinsRegular.copyWith(color: ColorResources.COLOR_DIM_GRAY)),
-                                  Text('$balance' != null ? '$balance': '0', style: poppinsRegular.copyWith(color: ColorResources.COLOR_DARK_ORCHID)),
-                                ],
-                              ),
-                            ),
-                            Container(height: 2, width: double.infinity, color: ColorResources.COLOR_WHITE_GRAY),
                             SizedBox(height: 10),
+                            Container(
+                                padding: EdgeInsets.only(left: 20, top: 19, right: 22),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => AirtimeScreen1()));
+                                      },
+                                      child: IconTitleColumnButton2(iconUrl: 'assets/Icon/telephn.png', title: 'Airtime'),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => cableTvScreen1()));
+                                      },
+                                      child: IconTitleColumnButton2(iconUrl: 'assets/Icon/tv.png', title: 'Cable Tv'),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        //CoinScreen
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ElectricityScreen1()));
+                                      },
+                                      child: IconTitleColumnButton2(iconUrl: 'assets/Icon/electricity.png',  title: 'Electricity'),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => DataScreen1()));
+                                      },
+                                      child: IconTitleColumnButton2(iconUrl: 'assets/Icon/internet.png',  title: 'Internet'),
+                                    ),
+                                  ],
+                                )),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 120,
+                        margin: EdgeInsets.only(left: 20.0, right:20.0 ),
+                        decoration: BoxDecoration(
+                          color: ColorResources.COLOR_WHITE,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 20,
+                              offset: Offset(0, 3), // changes position of shadow
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
                             Container(
                                 padding: EdgeInsets.only(left: 20, top: 19, right: 22),
                                 child: Row(
@@ -262,15 +270,15 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => MerchantScreen()));
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => CominSoonScreen()));
                                       },
                                       child: IconTitleColumnButton(iconUrl: 'assets/Icon/team.png', title: 'Merchants'),
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => TopUpScreen()));
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => CoinScreen()));
                                       },
-                                      child: IconTitleColumnButton(iconUrl: 'assets/Icon/oin.png',  title: 'My Coin'),
+                                      child: IconTitleColumnButton(iconUrl: 'assets/Icon/oin.png',  title: 'My ZIT'),
                                     ),
                                   ],
                                 )),
@@ -278,23 +286,23 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(left: 1, right: 1, top: 10),
+                        padding: EdgeInsets.only(left: 1, right: 1, top: 30),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-
+//WithdrawScreen1
                             IconTitleRowButton(
-                              widget: CharityScreen(),
+                              widget: SendMoneyScreen(),
                               iconUrl: 'assets/Icon/money.png',
                               title: 'Send Money',
                             ),
                             IconTitleRowButton(
-                              widget: CharityScreen(),
+                              widget: SendMoneyScreen1(),
                               iconUrl: 'assets/Icon/wallet2.png',
                               title: 'Fund Wallet',
                             ),
                             IconTitleRowButton(
-                              widget: EShoppingScreen(),
+                              widget: EducationScreen(),
                               iconUrl: 'assets/Icon/education1.png',
                               title: 'Education',
                             ),
@@ -302,23 +310,22 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(left: 1, right: 1, top: 20),
+                        padding: EdgeInsets.only( top: 30),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             IconTitleRowButton(
-                              widget: PayScreen(),
                               iconUrl: 'assets/Icon/loan1.png',
                               title:  'Access Loan',
+                              widget: CominSoonScreen(),
                             ),
                             IconTitleRowButton(
-                              widget: EShoppingScreen(),
-                              iconUrl: 'assets/Icon/topup1.png',
-                              title: 'Top up',
+                              iconUrl: '',
+                              title:  '',
                             ),
                             IconTitleRowButton(
-                              iconUrl: 'assets/Icon/scan.png',
-                              title: 'Scan2Pay',
+                              iconUrl: '',
+                              title:  '',
                             ),
                           ],
                         ),
@@ -396,6 +403,29 @@ class IconTitleColumnButton extends StatelessWidget {
     );
   }
 }
+
+class IconTitleColumnButton2 extends StatelessWidget {
+  final String iconUrl;
+  final String title;
+  IconTitleColumnButton2({@required this.iconUrl, @required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: 61,
+          height: 61,
+          padding: EdgeInsets.all(15),
+          decoration: BoxDecoration(color: ColorResources.COLOR_GHOST_WHITE, borderRadius: BorderRadius.circular(150)),
+          child: Image.asset(iconUrl, fit: BoxFit.scaleDown, height: 20.0, width: 20.0,),
+        ),
+        Text(title, style: poppinsRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_CHARCOAL)),
+      ],
+    );
+  }
+}
+
 
 class IconTitleRowButton extends StatelessWidget {
   final Widget widget;

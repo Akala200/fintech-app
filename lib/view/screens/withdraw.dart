@@ -13,6 +13,7 @@ import 'package:euzzit/view/widgets/send_money_widget.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:select_form_field/select_form_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:loading/loading.dart';
 import 'package:loading/indicator/ball_pulse_indicator.dart';
@@ -26,9 +27,11 @@ class WithdrawScreen1 extends StatefulWidget {
 class _WithdrawScreen1State extends State<WithdrawScreen1> {
   var amount = '0';
   var accountNumber;
-  var _myActivity = '';
   var bank_id;
   var  _myActivityResult = '';
+  var wallet;
+  List<Map<String, dynamic>> _items = [];
+
 
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -52,6 +55,22 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
 
     setState(() {
       data = resBody["data"];
+      var walletMain = prefs.getString('mainWalletBalance');
+      var walletMainSlug = prefs.getString('mainWalletSlug');
+      var extraWallet = prefs.getString('extraWalletBalance');
+      var extraWalletSlug = prefs.getString('extraWalletSlug');
+
+
+      _items = [
+        {
+          'value': '$walletMainSlug',
+          'label': '$walletMainSlug  $walletMain',
+        },
+        {
+          'value': '$extraWalletSlug',
+          'label': '$extraWalletSlug  $extraWallet',
+        },
+      ];
     });
 
     print(resBody["data"]);
@@ -73,68 +92,31 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
     return SendMoneyWidget(title: 'Withdraw From Euzzit', child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          width: double.infinity,
-          height: 60,
-          margin: EdgeInsets.only(right: 20, left: 20),
-          padding: EdgeInsets.only(left: 20, right: 10),
-          decoration: BoxDecoration(
-              color: ColorResources.COLOR_WHITE,
-              borderRadius: BorderRadius.all(Radius.circular(50)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 1,
-                  blurRadius: 10,
-                  offset: Offset(0, 3), // changes position of shadow
-                ),
-              ],
-              border: Border.all(color: ColorResources.COLOR_WHITE_GRAY,width: 2)
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  controller: _amountController,
-                  onChanged:(value) async {
-                    setState(() {
-                      amount = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Enter Amount",
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                  ),
-                ),
-              ),
-//https://euzzitstaging.com.ng/api/v1/auth/register
-            ],
-          ),
-        ),
+        SizedBox(height: 60.0,),
 
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: DropDownFormField(
+                titleText: 'Select A Bank',
+                value: bank_id,
+                onChanged: (value) {
+                  setState(() {
+                    bank_id = value;
+                  });
+                },
+                dataSource: data,
+                textField: 'bank_name',
+                valueField: 'id',
+              ),
+            ),
+//https://euzzitstaging.com.ng/api/v1/auth/register
+          ],
+        ),
         SizedBox(height: 20.0,),
 
         Container(
-          width: double.infinity,
-          height: 60,
-          margin: EdgeInsets.only(right: 20, left: 20),
-          padding: EdgeInsets.only(left: 20, right: 10),
-          decoration: BoxDecoration(
-              color: ColorResources.COLOR_WHITE,
-              borderRadius: BorderRadius.all(Radius.circular(50)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 1,
-                  blurRadius: 10,
-                  offset: Offset(0, 3), // changes position of shadow
-                ),
-              ],
-              border: Border.all(color: ColorResources.COLOR_WHITE_GRAY,width: 2)
-          ),
           child: Row(
             children: [
               Expanded(
@@ -149,8 +131,6 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                   },
                   decoration: InputDecoration(
                     hintText: "Recipient Account Number",
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
                   ),
                 ),
               ),
@@ -158,30 +138,58 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
             ],
           ),
         ),
+        SizedBox(height: 20.0,),
+        Container(
+          child: Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  controller: _amountController,
+                  onChanged:(value) async {
+                    setState(() {
+                      amount = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Enter Amount",
+                  ),
+                ),
+              ),
+//https://euzzitstaging.com.ng/api/v1/auth/register
+            ],
+          ),
+        ),
+        SizedBox(height: 30.0,),
+        Container(
+          child: Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: SelectFormField(
+                  type: SelectFormFieldType.dropdown, // or can be dialog
+                  initialValue: 'null',
+                  icon: Icon(Icons.account_balance_wallet),
+                  labelText: 'Wallet',
+                  items: _items,
+                  onChanged:(value) async {
+                    setState(() {
+                      wallet = value;
+                    });
+                  },
+                  onSaved: (val) => {
 
+                  },
+                ),
+              ),
+//https://euzzitstaging.com.ng/api/v1/auth/register
+            ],
+          ),
+        ),
         SizedBox(height: 20.0,),
 
-        Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: DropDownFormField(
-                titleText: 'Bank',
-                hintText: 'Select Bank',
-                value: _myActivity,
-                onChanged: (value) {
-                  setState(() {
-                    bank_id = value;
-                  });
-                },
-                dataSource: data,
-                textField: 'display',
-                valueField: 'value',
-            ),
-            ),
-//https://euzzitstaging.com.ng/api/v1/auth/register
-          ],
-        ),
+
         Padding(
           padding: EdgeInsets.symmetric(vertical: 30),
           child: Column(
@@ -241,7 +249,7 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      'Main',
+                      '$wallet',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -268,9 +276,32 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                   ),
                 ],
               ),
+
+              SizedBox(height: 10.0,),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 35.0),
+                    child: Text(
+                      'Bank ID:',
+                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 35.0),
+                    child: Text(
+                      '$bank_id',
+                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
+        SizedBox(height: 20.0,),
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),

@@ -31,24 +31,8 @@ class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
     return SendMoneyWidget(title: 'Fund Main Wallet', child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        SizedBox(height: 60,),
         Container(
-          width: double.infinity,
-          height: 60,
-          margin: EdgeInsets.only(right: 20, left: 20),
-          padding: EdgeInsets.only(left: 20, right: 10),
-          decoration: BoxDecoration(
-              color: ColorResources.COLOR_WHITE,
-              borderRadius: BorderRadius.all(Radius.circular(50)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 1,
-                  blurRadius: 10,
-                  offset: Offset(0, 3), // changes position of shadow
-                ),
-              ],
-              border: Border.all(color: ColorResources.COLOR_WHITE_GRAY,width: 2)
-          ),
           child: Row(
             children: [
               Expanded(
@@ -63,8 +47,6 @@ class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Amount",
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
                   ),
                 ),
               ),
@@ -72,7 +54,7 @@ class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
             ],
           ),
         ),
-
+        SizedBox(height: 30,),
         Padding(
           padding: EdgeInsets.symmetric(vertical: 30),
           child: Column(
@@ -118,33 +100,13 @@ class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
                 ],
               ),
               SizedBox(height: 10.0,),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 35.0),
-                    child: Text(
-                      'Wallet:',
-                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 35.0),
-                    child: Text(
-                      'Main',
-                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
-
+        SizedBox(height: 30,),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
-          child: CustomButton(btnTxt: 'Initiate', onTap: () async {
+          child: CustomButton(btnTxt: 'Fund Wallet', onTap: () async {
             var url = "https://euzzitstaging.com.ng/api/v1/user/transfer/generate_transaction_ref";
             SharedPreferences prefs = await SharedPreferences.getInstance();
             Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),

@@ -228,8 +228,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       var euzzitCoinSlug = st["data"]["user"]["user_wallets"][0]["slug"];
                       var euzzitCoinBalance = st["data"]["user"]["user_wallets"][0]["balance"];
                       var extraWalletName = st["data"]["user"]["user_wallets"][1]["name"];
-                      var extraWalletSlug = st["data"]["user"]["user_wallets"][0]["slug"];
-                      var extraWalletBalance = st["data"]["user"]["user_wallets"][0]["balance"];
+                      var extraWalletSlug = st["data"]["user"]["user_wallets"][1]["slug"];
+                      var extraWalletBalance = st["data"]["user"]["user_wallets"][1]["balance"];
                       await prefs.setString('referral_link', referral_link );
                       await prefs.setString('referral_link', referral_link );
                       await prefs.setString('first_name', first_name );
@@ -257,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       var st = jsonDecode(response.body);
                       print(response.body);
                       var errMessage = st["message"];
-                      Toast.show(errMessage, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                      Toast.show(errMessage, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
                     }
 
                   },),

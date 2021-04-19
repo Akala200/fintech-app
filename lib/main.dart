@@ -15,17 +15,13 @@ var token;
 
 Future<void> start() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  var token =  prefs.getString('accessToken');
-  if(token == null){
-    SplashScreenWallet();
-  } else{
-    WalletStartupScreen();
-  }
+   token =  prefs.getString('accessToken');
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
+  await start();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => di.sl<CharityProvider>()),
@@ -50,7 +46,6 @@ class MyApp extends StatelessWidget {
         primaryColor: ColorResources.COLOR_WHITE,
         bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
       ),
-      home: SplashScreenWallet(),
-    );
+      home: token == null ? SplashScreenWallet() : WalletStartupScreen());
   }
 }

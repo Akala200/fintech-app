@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:euzzit/view/screens/company_profile.dart';
 import 'package:euzzit/view/screens/create_profile.dart';
+import 'package:euzzit/view/screens/service.dart';
 import 'package:euzzit/view/screens/transfer.dart';
 import 'package:euzzit/view/screens/withdraw.dart';
 import 'package:flutter/material.dart';
@@ -70,8 +72,8 @@ class _MerchantScreenState extends State<MerchantScreen> {
       var euzzitCoinSlug = st["data"]["user"]["user_wallets"][0]["slug"];
       var euzzitCoinBalance = st["data"]["user"]["user_wallets"][0]["balance"];
       var extraWalletName = st["data"]["user"]["user_wallets"][1]["name"];
-      var extraWalletSlug = st["data"]["user"]["user_wallets"][0]["slug"];
-      var extraWalletBalance = st["data"]["user"]["user_wallets"][0]["balance"];
+      var extraWalletSlug = st["data"]["user"]["user_wallets"][1]["slug"];
+      var extraWalletBalance = st["data"]["user"]["user_wallets"][1]["balance"];
       await prefs.setString('referral_link', referral_link );
       await prefs.setString('referral_link', referral_link );
       await prefs.setString('first_name', first_name );
@@ -115,7 +117,7 @@ class _MerchantScreenState extends State<MerchantScreen> {
 
     if (response.statusCode == 200) {
       var st = jsonDecode(response.body);
-      List rawFavouriteList = await st["data"][0]["history"];
+      List rawFavouriteList = await st["data"][1]["history"];
       return rawFavouriteList;
     }
   }
@@ -171,7 +173,7 @@ class _MerchantScreenState extends State<MerchantScreen> {
                           children: [
                             IconTitleButton(iconUrl: 'assets/Icon/withdraw.png', title: 'Create Profile', widget: CreateProfileScreen()),
                             SizedBox(width: 15),
-                            IconTitleButton(iconUrl: 'assets/Icon/add money.png', title: 'Create Service',  widget: WithdrawScreen1()),
+                            IconTitleButton(iconUrl: 'assets/Icon/add money.png', title: 'Create Service',  widget: ServiceScreen1()),
                           ],
                         ),
                       ),
@@ -183,8 +185,6 @@ class _MerchantScreenState extends State<MerchantScreen> {
                           style: poppinsSemiBold.copyWith(color: ColorResources.COLOR_CHARCOAL),
                         ),
                       ),
-                      SizedBox(height: 24),
-                      SizedBox(height: 15),
                       SizedBox(height: 15),
                       SizedBox(height: 15),
                       Container(
@@ -194,47 +194,60 @@ class _MerchantScreenState extends State<MerchantScreen> {
                             builder: (context, AsyncSnapshot snapshot) {
                               if (!snapshot.hasData) {
                                 return Center(child: CircularProgressIndicator());
-                              }else if (snapshot.hasError) {
+                              }else if (snapshot.hasError || snapshot.data.length == 0 ) {
                                 return Container(
-                                  child: Center(child: Text('No Data', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),)),
+                                  child: Center(child: Text('No Data Available', style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),)),
                                 );
                               } else {
                               return  Container(
                                   width: double.infinity,
-                                  height: 600.0,
+                                  height: 500.0,
                                   child: ListView.builder(
                                         itemCount: snapshot.data.length,
                                         scrollDirection: Axis.vertical,
                                         itemBuilder: (BuildContext context, int index) {
-                                          return Column(
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(left: 35.0, bottom: 35.0, right: 35.0),
-                                                child: Row(
-                                                  children: [
-                                                   Column(
-                                                     children: [
-                                                       Row(
-                                                         children: [
-                                                           Text(snapshot.data[index]["amount"], style: TextStyle(color: Colors.black, fontSize: 12.0),),
-                                                           SizedBox(height: 14.0,),
-                                                           Text('${snapshot.data[index]["type"]}', style: TextStyle(color: Colors.black, fontSize: 12.0),)
-                                                         ],
-                                                       ),
-                                                       Row(
-                                                         children: [
-                                                           Text('${snapshot.data[index]["description"]}', style: TextStyle(color: Colors.black, fontSize: 12.0),),
-                                                           SizedBox(height: 14.0,),
-                                                           Text('${new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(snapshot.data[index]["created_at"])}', style: TextStyle(color: Colors.black, fontSize: 12.0),)
-                                                         ],
-                                                       )
-                                                     ],
-                                                   )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
+                                          return  Container(
+                                            alignment: Alignment.centerLeft,
+                                            margin: EdgeInsets.only(left: 30, right: 30, bottom: 10),
+                                            padding: EdgeInsets.only(left: 17, bottom: 6, top: 23, right: 10),
+                                            decoration: BoxDecoration(color: ColorResources.COLOR_WHITE, borderRadius: BorderRadius.circular(10)),
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(width: 10),
+                                                Expanded(
+                                                  flex: 5,
+                                                  child: Column(
+                                                    children: [
+                                                      Text(
+                                                       'Description:  ${snapshot.data[index]["description"]}',
+                                                        style:
+                                                        montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
+                                                      ),
+                                                      SizedBox(height: 13.0,),
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            snapshot.data[index]["amount"],
+                                                            style: poppinsSemiBold.copyWith(
+                                                                fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_ROYAL_BLUE),
+                                                          ),
+                                                          Text(
+                                                            snapshot.data[index]["type"],
+                                                            style: poppinsSemiBold.copyWith(
+                                                                fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_ROYAL_BLUE),
+                                                          ),
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
                                           );
+
+
                                         }));
                               }
                             }),

@@ -5,20 +5,13 @@ class PromoRepo {
   List<PromoModel> getPromoData() {
     List<PromoModel> promoList = [
       PromoModel(
-          imageUrl: 'assets/Icon/saving account banner.png',
-          promoTitle: Strings.SAVING_ACCOUNT,
-          promosubTitle: Strings.GET_UP_TO,
+          imageUrl: 'assets/Icon/lock2.png',
+          promoTitle: 'Protect Wallet',
           id: 1),
       PromoModel(
-          imageUrl: 'assets/Icon/request.png',
-          promoTitle: Strings.SAVING_ACCOUNT,
-          promosubTitle: Strings.GET_UP_TO,
+          imageUrl: 'assets/Icon/wallet3.png',
+          promoTitle: 'Activate Wallet',
           id: 2),
-      PromoModel(
-          imageUrl: 'assets/Icon/electricity.png',
-          promoTitle: Strings.SAVING_ACCOUNT,
-          promosubTitle: Strings.GET_UP_TO,
-          id: 3),
     ];
 
     return promoList;

@@ -1,31 +1,17 @@
 import 'dart:convert';
-
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:euzzit/view/screens/transfer.dart';
-import 'package:euzzit/view/screens/withdraw.dart';
+import 'package:euzzit/view/screens/view_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/provider/goals_provider.dart';
 import 'package:euzzit/utility/dimensions.dart';
-import 'package:euzzit/utility/strings.dart';
 import 'package:euzzit/utility/colorResources.dart';
 import 'package:euzzit/utility/style.dart';
 import 'package:euzzit/view/widgets/custom_app_bar.dart';
-import 'package:euzzit/view/widgets/my_goals_card_widget.dart';
-import 'package:provider/provider.dart';
-import 'package:euzzit/view/screens/pay_screen.dart';
-import 'package:euzzit/view/screens/saving_account_screen.dart';
-import 'package:euzzit/view/screens/cashback_screen.dart';
-import 'package:euzzit/view/screens/charity_screen.dart';
-import 'package:euzzit/view/screens/e_shopping_screen.dart';
-import 'package:euzzit/view/screens/gift_screen.dart';
-import 'package:euzzit/view/screens/request_screen.dart';
-import 'package:euzzit/view/screens/send_money1_screen.dart';
-import 'package:euzzit/view/screens/topup_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+
 
 class SavingAccountScreen extends StatefulWidget {
   @override
@@ -35,11 +21,18 @@ class SavingAccountScreen extends StatefulWidget {
 class _SavingAccountScreenState extends State<SavingAccountScreen> {
   int bannerIndex = 0;
   var balance;
+  var balanceExtra;
+  var balanceExtraSlug;
+  var mainBalance;
+  var mainRealBalance;
+  var inputFormat = DateFormat('MM/dd/yyyy hh:mm a');
+  var outputFormat = DateFormat('MM/dd/yyyy hh:mm a');
+
 
   void getFreshData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var url = "https://euzzitstaging.com.ng/api/v1/user/profile";
-    var token =  prefs.getString('access_token');
+    var token = prefs.getString('access_token');
     print(token);
     final http.Response response = await http.get(
       url,
@@ -73,15 +66,15 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
       var extraWalletName = st["data"]["user"]["user_wallets"][1]["name"];
       var extraWalletSlug = st["data"]["user"]["user_wallets"][0]["slug"];
       var extraWalletBalance = st["data"]["user"]["user_wallets"][0]["balance"];
-      await prefs.setString('referral_link', referral_link );
-      await prefs.setString('referral_link', referral_link );
-      await prefs.setString('first_name', first_name );
-      await prefs.setString('last_name', last_name );
-      await prefs.setString('email', email );
-      await prefs.setString('phone', phone );
-      await prefs.setString('username', username );
-      await prefs.setString('accountStatus', accountStatus );
-      await prefs.setString('referalCode', referalCode );
+      await prefs.setString('referral_link', referral_link);
+      await prefs.setString('referral_link', referral_link);
+      await prefs.setString('first_name', first_name);
+      await prefs.setString('last_name', last_name);
+      await prefs.setString('email', email);
+      await prefs.setString('phone', phone);
+      await prefs.setString('username', username);
+      await prefs.setString('accountStatus', accountStatus);
+      await prefs.setString('referalCode', referalCode);
       await prefs.setString('accessToken', accessToken);
       await prefs.setString('mainWalletName', mainWalletName);
       await prefs.setString('mainWalletSlug', mainWalletSlug);
@@ -92,18 +85,23 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
       await prefs.setString('extraWalletName', extraWalletName);
       await prefs.setString('extraWalletSlug', extraWalletSlug);
       await prefs.setString('extraWalletBalance', extraWalletBalance);
+      print(balanceExtra);
     }
+    //mainWalletName
     setState(() {
       balance = prefs.getString('mainWalletBalance');
+      balanceExtraSlug =  prefs.getString('extraWalletName');
+      balanceExtra = prefs.getString('extraWalletBalance');
+      mainBalance = prefs.getString('mainWalletName');
+      mainRealBalance = prefs.getString('mainWalletBalance');
     });
-//accountStatus
-
+//accountStatus  mainWalletBalance
   }
 
   _fetchListItems() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var url = "https://euzzitstaging.com.ng/api/v1/user/transactions/wallets";
-    var token =  prefs.getString('accessToken');
+    var token = prefs.getString('accessToken');
 
     final http.Response response = await http.get(
       url,
@@ -114,11 +112,10 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
     );
     print(response.body);
     if (response.statusCode == 200) {
-    var st = jsonDecode(response.body);
-    print(response.body);
+      var st = jsonDecode(response.body);
 
-    List rawFavouriteList = await st["data"][3]["history"];
-    return rawFavouriteList;
+      List rawFavouriteList = await st["data"][3]["history"];
+      return rawFavouriteList;
     }
   }
 
@@ -134,48 +131,172 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
       body: Stack(
         children: [
           Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
             child: Image.asset(
               'assets/Illustration/Untitled-1.png',
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
+              width: 500.0,
+              height: 500.0,
               fit: BoxFit.fill,
             ),
           ),
           SafeArea(
             child: Column(
               children: [
-                CustomAppBar(title: 'Wallet', color: ColorResources.COLOR_WHITE),
+                CustomAppBar(
+                    title: 'My Wallet', color: Colors.white),
                 Expanded(
                   child: ListView(
                     children: [
                       SizedBox(height: 20),
                       Container(
                         margin: EdgeInsets.only(left: 30, right: 30),
-                        padding: EdgeInsets.only(left: 15, right: 15),
-                        height: 80,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: ColorResources.COLOR_WHITE.withOpacity(.24)),
+                        height: 100,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Main Balance', style: poppinsRegular.copyWith(color: ColorResources.COLOR_WHITE, fontWeight: FontWeight.bold, fontSize: 15.0)),
-                            Text('$balance' != null ? '$balance': '0', style: poppinsRegular.copyWith(color: ColorResources.COLOR_WHITE, fontWeight: FontWeight.bold, fontSize: 15.0)),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                },
+                                child: Container(
+                                  width: 90,
+                                  height: 120,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: ColorResources.COLOR_WHITE,
+                                    borderRadius: BorderRadius.circular(7),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 1,
+                                        blurRadius: 10,
+                                        offset: Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Your  Wallet Balances',
+                                          style: TextStyle( fontSize: 16.0,
+                                              color: Colors.deepPurple)),
+                                      SizedBox(height: 20.0,),
+                                      Text('Click a wallet to see your transaction history',
+                                          style: TextStyle( fontSize: 12.0,
+                                              color: Colors.deepPurple)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 70),
-                      SizedBox(height: 25),
+                      SizedBox(
+                        height: 20.0,
+                      ),
                       Container(
                         margin: EdgeInsets.only(left: 30, right: 30),
-                        height: 88,
+                        height: 100,
                         child: Row(
                           children: [
-                            IconTitleButton(iconUrl: 'assets/Icon/add money.png', title: 'Fund Wallet',  widget: SendMoneyScreen1()),
-                            SizedBox(width: 15),
-                            IconTitleButton(iconUrl: 'assets/Icon/withdraw.png', title: 'Transfer', widget: TransferScreen1(),),
-                            SizedBox(width: 15),
-                            IconTitleButton(iconUrl: 'assets/Icon/add money.png', title: 'Withdraw',  widget: WithdrawScreen1()),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                },
+                                child: Container(
+                                  width: 90,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepPurple.shade900,
+                                    borderRadius: BorderRadius.circular(7),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 1,
+                                        blurRadius: 10,
+                                        offset: Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Icon(Icons.account_balance_wallet, color: Colors.white, size: 40.0,),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                                        child: Column(
+                                          children: [
+                                            Text('$balanceExtraSlug',
+                                                style: TextStyle( fontSize: 16.0,
+                                                    color: Colors.white)),
+                                            SizedBox(height: 5.0,),
+                                            Text('₦ $balanceExtra',
+                                                style: TextStyle( fontSize: 16.0,
+                                                    color: Colors.white))
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 30, right: 30),
+                        height: 100,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                },
+                                child: Container(
+                                  width: 90,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    color: Colors.purple,
+                                    borderRadius: BorderRadius.circular(7),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 1,
+                                        blurRadius: 10,
+                                        offset: Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Icon(Icons.account_balance_wallet, color: Colors.white, size: 40.0,),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                                        child: Column(
+                                          children: [
+                                            Text('$mainBalance',
+                                                style: TextStyle( fontSize: 16.0,
+                                                    color: Colors.white)),
+                                            SizedBox(height: 5.0,),
+                                            Text('₦ $mainRealBalance',
+                                                style: TextStyle( fontSize: 16.0,
+                                                    color: Colors.white))
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -183,47 +304,136 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                       Padding(
                         padding: EdgeInsets.only(left: 20),
                         child: Text(
-                          'Wallet Transaction History',
-                          style: poppinsSemiBold.copyWith(color: ColorResources.COLOR_CHARCOAL),
+                          'Your Recent Transactions',
+                          style: TextStyle(fontSize: 17.0,
+                              color: Colors.deepPurple),
                         ),
                       ),
-                      SizedBox(height: 24),
                       SizedBox(height: 15),
                       SizedBox(height: 15),
-                      SizedBox(height: 15),
-                     Container(
-                       child: FutureBuilder(
-                           future: _fetchListItems(),
-                           // ignore: missing_return
-                           builder: (context, AsyncSnapshot snapshot) {
-                             if (!snapshot.hasData) {
-                               return Center(child: CircularProgressIndicator());
-                             } else {
-                               Container(
-                                   child: ListView.builder(
-                                       itemCount: snapshot.data.length,
-                                       scrollDirection: Axis.horizontal,
-                                       itemBuilder: (BuildContext context, int index) {
-                                         return Row(
-                                           children: [
-                                            Column(
+                      Container(
+                        child: FutureBuilder(
+                            future: _fetchListItems(),
+                            // ignore: missing_return
+                            builder: (context, AsyncSnapshot snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              } else if (snapshot.hasError ||
+                                  snapshot.data.length == 0) {
+                                return Container(
+                                  child: Center(
+                                      child: Text(
+                                    'No Data Available',
+                                    style: TextStyle(
+                                        fontSize: 15.0,
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                                );
+                              } else {
+                                return Container(
+                                    width: double.infinity,
+                                    height: 500.0,
+                                    child: ListView.builder(
+                                        itemCount: snapshot.data.length,
+                                        scrollDirection: Axis.vertical,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return Container(
+                                            alignment: Alignment.centerLeft,
+                                            margin: EdgeInsets.only(
+                                                left: 30,
+                                                right: 30,
+                                                bottom: 10),
+                                            padding: EdgeInsets.only(
+                                                left: 17,
+                                                bottom: 6,
+                                                top: 23,
+                                                right: 10),
+                                            decoration: BoxDecoration(
+                                                color:
+                                                    ColorResources.COLOR_WHITE,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                Text('${snapshot.data[index].amount}', style: TextStyle(color: Colors.black, fontSize: 12.0),),
-                                                Text('${snapshot.data[index].type}', style: TextStyle(color: Colors.black, fontSize: 12.0),)
+                                                SizedBox(width: 10),
+                                                Expanded(
+                                                  flex: 5,
+                                                  child: GestureDetector(
+                                                  onTap: (){
+                                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => TransactionViewScreen(amount: snapshot.data[index]["amount"], description: snapshot.data[index]["description"], time:  snapshot.data[index]["created_at"], type: snapshot.data[index]["type"],)));
+                                                  },
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Row(
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                              children: [
+                                                                Text(
+                                                                  snapshot.data[index]
+                                                                  ["type"],
+                                                                  style: poppinsSemiBold.copyWith(
+                                                                      fontSize: Dimensions
+                                                                          .FONT_SIZE_SMALL,
+                                                                      color: ColorResources
+                                                                          .COLOR_ROYAL_BLUE),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Expanded(
+                                                              child: Text(
+                                                                snapshot.data[index]
+                                                                ["description"],
+                                                                style: TextStyle(fontSize: 15.0, color: Colors.black),
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              '₦ ${snapshot.data[index]
+                                                              ["amount"]}',
+                                                              style: TextStyle(fontSize: 17.0, color: Colors.red),
+                                                            ),
+
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: 15.0,
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Text(
+                                                              '${outputFormat.format(DateTime.parse(DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(snapshot.data[index]["created_at"]).toString()))}',
+                                                              style: TextStyle(fontSize: 15.0, color: Colors.black),
+                                                            ),
+
+                                                            Icon(Icons.arrow_forward_ios_sharp, color: Colors.grey, size: 15.0,)
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: 18.0,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
                                               ],
                                             ),
-                                             Column(
-                                               children: [
-                                                 Text('${snapshot.data[index].description}', style: TextStyle(color: Colors.black, fontSize: 12.0),),
-                                                 Text('${new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(snapshot.data[index].created_at)}', style: TextStyle(color: Colors.black, fontSize: 12.0),)
-                                               ],
-                                             )
-                                           ],
-                                         );
-                                       }));
-                             }
-                           }),
-                     )
+                                          );
+                                        }));
+                              }
+                            }),
+                      )
                     ],
                   ),
                 )
@@ -237,10 +447,14 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
 
   List<Widget> _indicator() {
     List<Widget> indicator = [];
-    for(int i=0; i < Provider.of<GoalsProvider>(context).getGoalsList().length; i++) {
+    for (int i = 0;
+        i < Provider.of<GoalsProvider>(context).getGoalsList().length;
+        i++) {
       indicator.add(TabPageSelectorIndicator(
-        backgroundColor: i == bannerIndex ? Colors.orange : ColorResources.COLOR_WHITE,
-        borderColor: i == bannerIndex ? Colors.orange : ColorResources.COLOR_WHITE,
+        backgroundColor:
+            i == bannerIndex ? Colors.orange : ColorResources.COLOR_WHITE,
+        borderColor:
+            i == bannerIndex ? Colors.orange : ColorResources.COLOR_WHITE,
         size: 8,
       ));
     }
@@ -252,15 +466,17 @@ class IconTitleButton extends StatelessWidget {
   final String iconUrl;
   final String title;
   final Widget widget;
-  IconTitleButton({@required this.iconUrl, @required this.widget, @required this.title});
+  IconTitleButton(
+      {@required this.iconUrl, @required this.widget, @required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          if(widget != null) {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => widget));
+          if (widget != null) {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => widget));
           }
         },
         child: Container(
@@ -284,7 +500,10 @@ class IconTitleButton extends StatelessWidget {
             children: [
               Image.asset(iconUrl, width: 35, height: 25),
               SizedBox(height: 10),
-              Text(title, style: poppinsRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY)),
+              Text(title,
+                  style: poppinsRegular.copyWith(
+                      fontSize: Dimensions.FONT_SIZE_SMALL,
+                      color: ColorResources.COLOR_DIM_GRAY)),
             ],
           ),
         ),
@@ -292,4 +511,3 @@ class IconTitleButton extends StatelessWidget {
     );
   }
 }
-

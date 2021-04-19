@@ -14,33 +14,29 @@ class SendMoneyWidget extends StatelessWidget {
       body: SingleChildScrollView(
         child: Stack(
           children: [
-
-            Image.asset(
-              'assets/Illustration/back-full.png',
-              fit: BoxFit.fill,
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-            ),
             SafeArea(
               child: Container(
-                height: 100,
+                height: 140,
                 width: MediaQuery.of(context).size.width,
                 child: Stack(children: [
-                  IconButton(
-                    icon: Icon(Icons.chevron_left, size: 30, color: ColorResources.COLOR_WHITE),
-                    onPressed: () => Navigator.of(context).pop(),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: IconButton(
+                      icon: Icon(Icons.chevron_left, size: 30, color: Colors.deepPurple),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
                   ),
-                  Center(child: Text(title, style: montserratSemiBold.copyWith(color: ColorResources.COLOR_WHITE))),
+                  Center(child: Text(title, style: montserratSemiBold.copyWith(color: Colors.deepPurple, fontSize: 18.0))),
                 ]),
               ),
             ),
 
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 30, vertical: 150),
-              height: 500.0,
+              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 150),
+              height: 670.0,
               padding: EdgeInsets.all(20.0),
               decoration: BoxDecoration(color: ColorResources.COLOR_WHITE, borderRadius: BorderRadius.circular(15)),
-              child: child,
+              child: SingleChildScrollView(child: child),
             ),
           ],
         ),
