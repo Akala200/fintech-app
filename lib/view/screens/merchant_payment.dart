@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:euzzit/view/screens/finish_transaction.dart';
 import 'package:euzzit/view/screens/saving_account_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -120,7 +121,7 @@ class _MerchantPaymentScreenState extends State<MerchantPaymentScreen> {
                         child: PinCodeTextField(
                           length: 4,
                           appContext: context,
-                          obscureText: false,
+                          obscureText: true,
                           keyboardType: TextInputType.number,
                           animationType: AnimationType.fade,
                           validator: (v) {
@@ -183,61 +184,55 @@ class _MerchantPaymentScreenState extends State<MerchantPaymentScreen> {
                   onTap: () async {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     var amount =  prefs.getString('merchant_amount');
-                    var id =  prefs.getInt('merchant_id');
+                    var id =  prefs.getString('merchant_id');
                     var wallet =  prefs.getString('merchant_Wallet');
 //dstvaccount
-                    var url = "https://euzzitstaging.com.ng/api/v1/auth/activate_account";
                     var url1 = "https://euzzitstaging.com.ng/api/v1/user/merchant/payment";
 
                     Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
                         overlayColor: Color(0x99E8EAF6));
                     var token =  prefs.getString('accessToken');
-
-                    final http.Response response = await http.post(
-                      url,
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'Authorization': 'Bearer $token',
-                      },
-                      body: jsonEncode(<String, String>{
-                        'code': code,
-                      }),
-                    );
-
-                    if (response.statusCode == 200) {
                       final http.Response response = await http.post(
                         url1,
                         headers: <String, String>{
                           'Content-Type': 'application/json; charset=UTF-8',
+                          'Accept': 'application/json',
                           'Authorization': 'Bearer $token',
+                          'pin': '$code'
 
                         },
                         body: jsonEncode({
                           'amount': amount,
-                          'eUzzit_service_id': id,
+                          'euzzit_service_id': id,
                           'wallet': wallet,
                         }),
                       );
-                      Loader.hide();
-                      if (response.statusCode == 200) {
-                        var st = jsonDecode(response.body);
-                        print(st);
-                        Toast.show('Airtime purchase successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
 
-                        Navigator.pop(context);
-                      } else {
-                        var st = jsonDecode(response.body);
-                        var message = st["message"];
-                        print(response.body);
-                        Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-                      }
+                    if (response.statusCode == 200) {
+                      Loader.hide();
+                      var mechantId = 'Merchant with $id';
+                      var st = jsonDecode(response.body);
+                      Toast.show('Transaction Successful', context,
+                          duration: Toast.LENGTH_LONG,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: Colors.green);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => FinishTransactionScreen(
+                            type: 'merchant payment',
+                            amount: amount,
+                            recipient: mechantId,
+                            from: wallet,
+                            description: 'EUZZIT merchant payment',
+                          )));
                     } else {
                       Loader.hide();
                       var st = jsonDecode(response.body);
                       var message = st["message"];
                       print(response.body);
-                      Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-
+                      Toast.show(message, context,
+                          duration: Toast.LENGTH_LONG,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: Colors.red);
                     }
                   },
                 ),

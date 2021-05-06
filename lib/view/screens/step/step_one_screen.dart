@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:euzzit/Network/auth.dart';
 import 'package:euzzit/view/screens/step/login.dart';
@@ -19,24 +20,64 @@ import 'package:loading/loading.dart';
 import 'package:loading/indicator/ball_pulse_indicator.dart';
 import 'package:toast/toast.dart';
 
-class StepOneScreen extends StatelessWidget {
+class StepOneScreen extends StatefulWidget {
 
+  @override
+  _StepOneScreenState createState() => _StepOneScreenState();
+}
+
+class _StepOneScreenState extends State<StepOneScreen> {
   final _formKey = GlobalKey<FormState>();
 
   var first_name;
+
   var last_name;
+
   var email;
+
   var phone;
+
   var username;
+
   var password;
+
   var password_confirm;
 
+  var _validate;
+
+  var _validated;
+
+  var _validates;
+
+  var _validateds;
+
+  var _validatess;
+
+  var _validatedss;
+
+
+  Color err_firstname = Colors.deepPurple;
+  Color err_lastname = Colors.deepPurple;
+  Color err_email = Colors.deepPurple;
+  Color err_phone = Colors.deepPurple;
+  Color err_username = Colors.deepPurple;
+  Color err_password = Colors.deepPurple;
+
+
+
+
   final TextEditingController _first_nameController = TextEditingController();
+
   final TextEditingController _last_nameController = TextEditingController();
+
   final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _phoneController = TextEditingController();
+
   final TextEditingController _usernameController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
+
   final TextEditingController _password_confirmController = TextEditingController();
 
   @override
@@ -107,10 +148,11 @@ class StepOneScreen extends StatelessWidget {
                             hintText: "First Name",
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
+                            errorText: _validate == true ? 'Value Can\'t Be Empty' : null,
                           ),
                         ),
                       ),
-                      Icon(Icons.person,color: Colors.deepPurple,),
+                      Icon(Icons.person,color: err_firstname),
 //https://euzzitstaging.com.ng/api/v1/auth/register
                     ],
                   ),
@@ -145,15 +187,17 @@ class StepOneScreen extends StatelessWidget {
                           controller: _last_nameController,
                           onChanged:(value) async {
                             last_name = value;
+
                           },
                           decoration: InputDecoration(
                             hintText: "Last Name",
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
+                            errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
                           ),
                         ),
                       ),
-                      Icon(Icons.person,color: Colors.deepPurple,),
+                      Icon(Icons.person,color: err_lastname),
 
                     ],
                   ),
@@ -193,10 +237,11 @@ class StepOneScreen extends StatelessWidget {
                             hintText: "Email",
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
+                            errorText: _validateds == true ? 'Value Can\'t Be Empty' : null,
                           ),
                         ),
                       ),
-                      Icon(Icons.email,color: Colors.deepPurple,),
+                      Icon(Icons.email,color: err_email,),
 //https://euzzitstaging.com.ng/api/v1/auth/register
                     ],
                   ),
@@ -236,10 +281,11 @@ class StepOneScreen extends StatelessWidget {
                             hintText: "Phone Number",
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
+                            errorText: _validatedss == true ? 'Value Can\'t Be Empty' : null,
                           ),
                         ),
                       ),
-                      Icon(Icons.phone,color: Colors.deepPurple,),
+                      Icon(Icons.phone,color: err_phone,),
 //https://euzzitstaging.com.ng/api/v1/auth/register
                     ],
                   ),
@@ -280,10 +326,11 @@ class StepOneScreen extends StatelessWidget {
                             hintText: "Username",
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
+                            errorText: _validates == true ? 'Value Can\'t Be Empty' : null,
                           ),
                         ),
                       ),
-                      Icon(Icons.person_rounded,color: Colors.deepPurple,),
+                      Icon(Icons.person_rounded,color: err_username,),
 //https://euzzitstaging.com.ng/api/v1/auth/register
                     ],
                   ),
@@ -325,10 +372,11 @@ class StepOneScreen extends StatelessWidget {
                             hintText: "Password",
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
+                            errorText: _validatess == true ? 'Value Can\'t Be Empty' : null,
                           ),
                         ),
                       ),
-                      Icon(Icons.lock,color: Colors.deepPurple,),
+                      Icon(Icons.lock,color: err_password,),
 
                     ],
                   ),
@@ -339,44 +387,97 @@ class StepOneScreen extends StatelessWidget {
                 Container(
                   margin: EdgeInsets.only(bottom: 30,left: 15,right: 15),
                   child: CustomButton(btnTxt: Strings.CONTINUE,onTap: () async {
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                    var url = "https://euzzitstaging.com.ng/api/v1/auth/register";
-                    Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
-                        overlayColor: Color(0x99E8EAF6));
-                    final http.Response response = await http.post(
-                      url,
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                      },
-                      body: jsonEncode(<String, String>{
-                        'first_name': first_name,
-                        'last_name': last_name,
-                        'email': email,
-                        'phone': phone,
-                        'username': username,
-                        'password': password,
-                        'password_confirmation': password
-                      }),
-                    );
-                    Loader.hide();
-                    if (response.statusCode == 200) {
-                      var st = jsonDecode(response.body);
-                      print(st);
-                      var status = st["status"];
-                      var referral_link = st["data"]["referral_link"];
-                      await prefs.setString('firstName', first_name );
-                      await prefs.setString('lastName', last_name );
-                      await prefs.setString('email', email );
-                      await prefs.setString('phone', phone );
-                      await prefs.setString('referral_link', referral_link );
-                      await prefs.setString('referral_link', referral_link );
-                      print(status);
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => StepTwoScreen()));
-                    } else {
-                      Loader.hide();
-                      Toast.show("User already Exists", context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-                    }
 
+                    var connectivityResult = await (Connectivity().checkConnectivity());
+                    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+
+
+                      if(_first_nameController.text.isEmpty){
+                        _first_nameController.text.isEmpty ? _validate = true : _validate = false;
+                        setState(() {
+                          _first_nameController.text.isEmpty ?  err_firstname = Colors.red : Colors.green;
+                        });
+                        Toast.show('first name cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                      } else if ( _last_nameController.text.isEmpty) {
+                        _last_nameController.text.isEmpty ? _validated = true : _validate = false;
+                        setState(() {
+                          _last_nameController.text.isEmpty ?  err_lastname = Colors.red :  Colors.green;
+                        });
+                        Toast.show('last name cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                      } else if ( _emailController.text.isEmpty) {
+                        _emailController.text.isEmpty ? _validateds = true : _validate = false;
+                        setState(() {
+                          _emailController.text.isEmpty ?  err_email = Colors.red :  Colors.green;
+                        });
+                        Toast.show('Email cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                      } else if ( _phoneController.text.isEmpty) {
+                        _phoneController.text.isEmpty ? _validatedss = true : _validate = false;
+                        setState(() {
+                          _phoneController.text.isEmpty ?  err_phone = Colors.red :  Colors.green;
+                        });
+                        Toast.show('Phone Number cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                      } else if ( _usernameController.text.isEmpty) {
+                        _usernameController.text.isEmpty ? _validates = true : _validate = false;
+                        setState(() {
+                          _usernameController.text.isEmpty ?  err_username = Colors.red :  Colors.green;
+                        });
+                        Toast.show('Username cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                      } else if ( _passwordController.text.isEmpty) {
+                        _passwordController.text.isEmpty ? _validatess = true : _validate = false;
+                        setState(() {
+                          _passwordController.text.isEmpty ?  err_password = Colors.red :  Colors.green;
+                        });
+                        Toast.show('password cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                      } else {
+
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      var url = "https://euzzitstaging.com.ng/api/v1/auth/register";
+                      Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
+                          overlayColor: Color(0x99E8EAF6));
+                      final http.Response response = await http.post(
+                        url,
+                        headers: <String, String>{
+                          'Content-Type': 'application/json; charset=UTF-8',
+                        },
+                        body: jsonEncode(<String, String>{
+                          'first_name': first_name,
+                          'last_name': last_name,
+                          'email': email,
+                          'phone': phone,
+                          'username': username,
+                          'password': password,
+                          'password_confirmation': password
+                        }),
+                      );
+                      Loader.hide();
+                      print(response.body);
+                      if (response.statusCode == 200) {
+                        var st = jsonDecode(response.body);
+                        print(st);
+                        var status = st["status"];
+                        var referral_link = st["data"]["referral_link"];
+                        await prefs.setString('firstName', first_name );
+                        await prefs.setString('lastName', last_name );
+                        await prefs.setString('email', email );
+                        await prefs.setString('phone', phone );
+                        await prefs.setString('referral_link', referral_link );
+                        await prefs.setString('referral_link', referral_link );
+                        print(status);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => StepTwoScreen()));
+                      } else {
+                        Loader.hide();
+                        var st = jsonDecode(response.body);
+                        var message = st["message"];
+                        Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                      }
+                      }
+
+                    } else {
+                      Toast.show('You are not connected to the internet', context,
+                          duration: Toast.LENGTH_LONG,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: Colors.red);
+                    }
                     },),
                 ),
                 SizedBox(

@@ -73,11 +73,11 @@ class _DATAPHONEState extends State<DATAPHONE> {
       _items = [
         {
           'value': '$walletMainSlug',
-          'label': '$walletMainSlug  $walletMain',
+          'label': '$walletMainSlug  ₦$walletMain',
         },
         {
           'value': '$extraWalletSlug',
-          'label': '$extraWalletSlug  $extraWallet',
+          'label': '$extraWalletSlug  ₦$extraWallet',
         },
       ];
     });
@@ -116,7 +116,13 @@ class _DATAPHONEState extends State<DATAPHONE> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Phone Number",
+                    labelText: 'Enter Phone Number',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
                     errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
 
                   ),
                 ),
@@ -157,7 +163,16 @@ class _DATAPHONEState extends State<DATAPHONE> {
                   type: SelectFormFieldType.dropdown, // or can be dialog
                   initialValue: 'null',
                   icon: Icon(Icons.account_balance_wallet),
-                  labelText: 'Wallet',
+                  decoration: InputDecoration(
+                    hintText: "Select Wallet",
+                    labelText:  "Select Wallet",
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+
+                  ),
                   items: _items,
                   onChanged:(value) async {
                     setState(() {
@@ -190,7 +205,7 @@ class _DATAPHONEState extends State<DATAPHONE> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '${widget.company}',
+                      '${widget.company != null ? widget.company : ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -211,7 +226,7 @@ class _DATAPHONEState extends State<DATAPHONE> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$amount',
+                      '${amount != null ? '₦$amount': '₦0'}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -232,7 +247,7 @@ class _DATAPHONEState extends State<DATAPHONE> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$phone',
+                      '${phone != null ? phone: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -253,7 +268,7 @@ class _DATAPHONEState extends State<DATAPHONE> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$wallet',
+                      '${wallet != null ? wallet: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -271,6 +286,10 @@ class _DATAPHONEState extends State<DATAPHONE> {
     if ( _phoneController.text.isEmpty) {
       _phoneController.text.isEmpty ? _validated = true : _validate = false;
     Toast.show('Phone number cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+    } else if(wallet == null){
+      Toast.show('Select a wallet', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+    } else if(amount == null){
+      Toast.show('Select a data bundle', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
     } else {
       await prefs.setString('dataAmount', amount);
       await prefs.setInt('dataService_id', widget.service_id);

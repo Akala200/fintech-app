@@ -15,7 +15,6 @@ import 'package:select_form_field/select_form_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:toast/toast.dart';
-import 'package:contact_picker/contact_picker.dart';
 
 class TransferScreen1 extends StatefulWidget {
   @override
@@ -27,8 +26,6 @@ class _TransferScreen1State extends State<TransferScreen1> {
   var phone;
   var wallet;
 
-  final ContactPicker _contactPicker = new ContactPicker();
-  Contact _contact;
   List<Map<String, dynamic>> _items = [];
 
   final TextEditingController _amountController = TextEditingController();
@@ -68,11 +65,11 @@ class _TransferScreen1State extends State<TransferScreen1> {
       _items = [
         {
           'value': '$walletMainSlug',
-          'label': '$walletMainSlug  $walletMain',
+          'label': '$walletMainSlug  ₦$walletMain',
         },
         {
           'value': '$extraWalletSlug',
-          'label': '$extraWalletSlug  $extraWallet',
+          'label': '$extraWalletSlug  ₦$extraWallet',
         },
       ];
     });
@@ -112,6 +109,13 @@ class _TransferScreen1State extends State<TransferScreen1> {
                   },
                   decoration: InputDecoration(
                     hintText: "Recipient Phone Number",
+                    labelText: 'Recipient Phone Number',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    errorText: _validate == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -124,15 +128,7 @@ class _TransferScreen1State extends State<TransferScreen1> {
           alignment: Alignment.topLeft,
           child: GestureDetector(
             onTap: () async {
-              Contact contact = await _contactPicker.selectContact();
-              setState(() {
-                print(contact);
-                _contact  = contact;
-                _phoneController.text = _contact.toString();
-                phone = _contact.toString();
-                print(_contact);
 
-              });
             },
               child: Text('Browse Contacts', style: TextStyle(color: Colors.deepPurple),)),
         ),
@@ -152,6 +148,13 @@ class _TransferScreen1State extends State<TransferScreen1> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Amount",
+                    labelText: 'Enter Amount',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -169,7 +172,16 @@ class _TransferScreen1State extends State<TransferScreen1> {
                   type: SelectFormFieldType.dropdown, // or can be dialog
                   initialValue: 'null',
                   icon: Icon(Icons.account_balance_wallet),
-                  labelText: 'Wallet',
+                  decoration: InputDecoration(
+                    hintText: "Select Wallet",
+                    labelText: "Select Wallet",
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
                   items: _items,
                   onChanged:(value) async {
                     setState(() {
@@ -186,6 +198,7 @@ class _TransferScreen1State extends State<TransferScreen1> {
           ),
         ),
 
+        SizedBox(height: 30.0,),
 
         Padding(
           padding: EdgeInsets.symmetric(vertical: 30),
@@ -204,7 +217,7 @@ class _TransferScreen1State extends State<TransferScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$amount',
+                      '₦$amount',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -246,7 +259,7 @@ class _TransferScreen1State extends State<TransferScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$wallet',
+                      '${wallet != null ? wallet: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -267,7 +280,7 @@ class _TransferScreen1State extends State<TransferScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$phone',
+                      '${phone != null ? phone: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -276,19 +289,35 @@ class _TransferScreen1State extends State<TransferScreen1> {
             ],
           ),
         ),
+        SizedBox(height: 40.0,),
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
           child: CustomButton(btnTxt: 'Initiate', onTap: () async {
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
-                overlayColor: Color(0x99E8EAF6));
+            if ( _phoneController.text.isEmpty) {
+              setState(() {
+                _phoneController.text.isEmpty ? _validate = true : _validate = false;
+              });
+              Toast.show('Recipient cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            }  else if(_amountController.text.isEmpty){
+              setState(() {
+                _amountController.text.isEmpty ? _validated = true : _validated = false;
+              });
+              Toast.show('Amount cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            } else if(wallet == null){
+              Toast.show('Select a wallet', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            } else  {
+              print(phone);
+              print(amount);
+              print(wallet);
             await prefs.setString('phone_transfer', phone );
             await prefs.setString('amount_transfer', amount );
             await prefs.setString('amount_wallet', wallet );
+            await prefs.setString('transfer_type', 'Transfer' );
 
-            Loader.hide();
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => PinTransferScreen()));
+            }
 
 
           }),

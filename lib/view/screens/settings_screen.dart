@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:euzzit/view/screens/Activate_account_settings.dart';
 import 'package:euzzit/view/screens/Upgrade.dart';
 import 'package:euzzit/view/screens/activation.dart';
+import 'package:euzzit/view/screens/create_profile.dart';
 import 'package:euzzit/view/screens/lifeline.dart';
 import 'package:euzzit/view/screens/step/login.dart';
 import 'package:euzzit/view/screens/update_account.dart';
 import 'package:euzzit/view/screens/upgrade_account_settings.dart';
 import 'package:euzzit/view/screens/upgrade_pin.dart';
+import 'package:euzzit/view/screens/verify_pin_update.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/utility/colorResources.dart';
@@ -206,7 +208,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ListTile(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => PinUpdateScreen()));
+                                builder: (context) => VerifyPinUpdateScreen()));
                           },
                           title: Padding(
                             padding: const EdgeInsets.all(10.0),
@@ -245,7 +247,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             height: 5, color: Colors.black),
 
                         ListTile(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => CreateProfileScreen()));
+                          },
                           title: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Row(
@@ -266,8 +271,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                         ListTile(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => PinUpdateScreen()));
+
                           },
                           title: Padding(
                             padding: const EdgeInsets.all(10.0),
@@ -301,11 +305,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             SharedPreferences prefs =
                             await SharedPreferences.getInstance();
                             await prefs.remove('accessToken');
+                            await Future.delayed(Duration(seconds: 2));
                             var token = prefs.getString('accessToken');
                             print(token);
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => LoginScreen()));
+
+                            Navigator.of(context).pushAndRemoveUntil(
+                              // the new route
+                              MaterialPageRoute(
+                                builder: (BuildContext context) => LoginScreen(),
+                              ),
+
+                              // this function should return true when we're done removing routes
+                              // but because we want to remove all other screens, we make it
+                              // always return false
+                                  (Route route) => false,
+                            );
                           },
                           title: Text(Strings.LOG_OUT,
                               style: poppinsSemiBold.copyWith(

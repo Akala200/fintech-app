@@ -32,9 +32,12 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
   var wallet;
   List<Map<String, dynamic>> _items = [];
 
+  var _validate;
+  var _validated;
+  var _validates;
 
   final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _accountNumberController = TextEditingController();
   String _mySelection = 'Select Bank';
 
   final String url = "https://euzzitstaging.com.ng/api/v1/banks";
@@ -64,11 +67,11 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
       _items = [
         {
           'value': '$walletMainSlug',
-          'label': '$walletMainSlug  $walletMain',
+          'label': '$walletMainSlug  ₦$walletMain',
         },
         {
           'value': '$extraWalletSlug',
-          'label': '$extraWalletSlug  $extraWallet',
+          'label': '$extraWalletSlug  ₦$extraWallet',
         },
       ];
     });
@@ -104,6 +107,7 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                 onChanged: (value) {
                   setState(() {
                     bank_id = value;
+                    print(bank_id);
                   });
                 },
                 dataSource: data,
@@ -122,8 +126,8 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
               Expanded(
                 flex: 3,
                 child: TextField(
-                  keyboardType: TextInputType.phone,
-                  controller: _phoneController,
+                  keyboardType: TextInputType.number,
+                  controller: _accountNumberController,
                   onChanged:(value) async {
                     setState(() {
                       accountNumber = value;
@@ -131,6 +135,13 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                   },
                   decoration: InputDecoration(
                     hintText: "Recipient Account Number",
+                    labelText: 'Recipient Account Number',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    errorText: _validate == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -154,6 +165,13 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Amount",
+                    labelText: 'Enter Amount',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -171,7 +189,16 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                   type: SelectFormFieldType.dropdown, // or can be dialog
                   initialValue: 'null',
                   icon: Icon(Icons.account_balance_wallet),
-                  labelText: 'Wallet',
+                  decoration: InputDecoration(
+                    hintText: 'Select Wallet',
+                    labelText: 'Select Wallet',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
                   items: _items,
                   onChanged:(value) async {
                     setState(() {
@@ -207,7 +234,7 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$amount',
+                      '${amount != null ? '₦$amount': '₦0'}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -249,7 +276,7 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$wallet',
+                      '${wallet != null ? wallet: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -270,7 +297,7 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$accountNumber',
+                      '${ accountNumber != null ? accountNumber:''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -292,7 +319,7 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$bank_id',
+                      '${ bank_id != null ? bank_id:''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -307,15 +334,28 @@ class _WithdrawScreen1State extends State<WithdrawScreen1> {
           padding: const EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
           child: CustomButton(btnTxt: 'Initiate', onTap: () async {
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
-                overlayColor: Color(0x99E8EAF6));
-            await prefs.setString('accountNumber_withdraw', accountNumber );
-            await prefs.setString('amount_withdraw', amount );
-            await prefs.setString('bank_id', bank_id );
-            Loader.hide();
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => WithdrawPinScreen()));
-
-
+            if(bank_id == null){
+              Toast.show('Select a bank', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            } else if (_accountNumberController.text.isEmpty){
+              setState(() {
+                _accountNumberController.text.isEmpty ? _validate = true : _validate = false;
+              });
+              Toast.show('Account number cannot be empty', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            } else if ( _amountController.text.isEmpty) {
+              setState(() {
+                _amountController.text.isEmpty ? _validated = true : _validated = false;
+              });
+              Toast.show('Amount cannot be empty', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            }  else if(wallet == null){
+              Toast.show('Select a wallet', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            } else {
+              await prefs.setString('accountNumber_withdraw', accountNumber);
+              await prefs.setString('amount_withdraw', amount);
+              await prefs.setString('wallet_withdraw', wallet);
+              await prefs.setInt('bank_id', bank_id);
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => WithdrawPinScreen()));
+            }
           }),
         ),
       ],

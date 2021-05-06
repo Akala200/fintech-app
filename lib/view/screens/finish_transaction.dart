@@ -1,10 +1,16 @@
 import 'dart:convert';
+import 'package:euzzit/view/screens/home_screen.dart';
+import 'package:euzzit/view/screens/send_fund.dart';
+import 'package:euzzit/view/screens/startup_Screen.dart';
+import 'package:euzzit/view/screens/transfer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/provider/goals_provider.dart';
 import 'package:euzzit/utility/dimensions.dart';
 import 'package:euzzit/utility/colorResources.dart';
 import 'package:euzzit/utility/style.dart';
 import 'package:euzzit/view/widgets/custom_app_bar.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -12,18 +18,25 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 
-class TransactionViewScreen extends StatefulWidget {
+class FinishTransactionScreen extends StatefulWidget {
   final  String amount;
   final String description;
   final String type;
-  final String time;
+  final String from;
+  final String recipient;
+  final String coinEarned;
+  final String token;
+  final String serial;
 
-  TransactionViewScreen({Key key, @required this.amount, @required this.description, @required this.time, @required this.type }) : super(key: key);
+
+
+
+  FinishTransactionScreen({Key key,  this.amount, this.description,  this.from, this.type, this.recipient, this.coinEarned, this.token, this.serial }) : super(key: key);
   @override
-  _TransactionViewScreenState createState() => _TransactionViewScreenState();
+  _FinishTransactionScreenState createState() => _FinishTransactionScreenState();
 }
 
-class _TransactionViewScreenState extends State<TransactionViewScreen> {
+class _FinishTransactionScreenState extends State<FinishTransactionScreen> {
   int bannerIndex = 0;
   var balance;
   var balanceExtra;
@@ -139,154 +152,99 @@ class _TransactionViewScreenState extends State<TransactionViewScreen> {
             child: Image.asset(
               'assets/Illustration/Untitled-1.png',
               width: 500.0,
-              height: 500.0,
+              height: 300.0,
               fit: BoxFit.fill,
             ),
           ),
           SafeArea(
             child: Column(
               children: [
-                CustomAppBar(
-                    title: 'View Transaction', color: ColorResources.COLOR_WHITE),
+              Container(
+              height: 80,
+              width: MediaQuery.of(context).size.width,
+              child: Stack(children: [
+                Center(child: Text('Transaction Result', style: TextStyle(color: Colors.white, fontSize: 18.0))),
+              ]),
+            ),
                 Expanded(
                   child: Column(
                     children: [
-                      SizedBox(height: 20),
+
+                      SizedBox(
+                        height: 50.0,
+                      ),
+
                       Container(
-                        margin: EdgeInsets.only(left: 30, right: 30),
-                        height: 100,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                },
-                                child: Container(
-                                  width: 90,
-                                  height: 120,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: widget.type == 'DEBIT' ? Colors.redAccent : Colors.green,
-                                    borderRadius: BorderRadius.circular(7),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        spreadRadius: 1,
-                                        blurRadius: 10,
-                                        offset: Offset(0, 3),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text('${widget.type}',
-                                          style: TextStyle( fontSize: 14.0,
-                                              color: Colors.white)),
-                                      SizedBox(height: 10.0,),
-                                      Text('₦ ${widget.amount}',
-                                          style: TextStyle( fontSize: 20.0,
-                                              color: Colors.white)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                        child: Center(child: Icon(Icons.check_circle_outline_sharp, size: 150.0, color: Colors.green,)),
+                      ),
+                      SizedBox(height: 20.0,),
+                      Container(
+                        child: Center(
+                            child:  Text('${widget.type}', style: TextStyle(fontSize: 18.0, color: Colors.green),),
                         ),
                       ),
-                      SizedBox(
-                        height: 15.0,
-                      ),
                       Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(30.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Column(
-                                   children: [
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Text('Transaction Details', style: TextStyle(fontSize: 16.0, color: Colors.black),),
-                                       ],
-                                     ),
-                                     SizedBox(
-                                       height: 25.0,
-                                     ),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Text('Description', style: TextStyle(fontSize: 16.0, color: Colors.black),),
-                                       ],
-                                     ),
-                                     SizedBox(height: 7.0,),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Expanded(child: Text('${widget.description}', style: TextStyle(fontSize: 16.0, color: Colors.black),)),
-                                       ],
-                                     ),
-                                     Divider(
-                                         color: Colors.black,
-                                       height: 5.0,
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Expanded(child: Text('Narration', style: TextStyle(fontSize: 16.0, color: Colors.black),)),
-                                       ],
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Divider(
-                                       color: Colors.black,
-                                       height: 5.0,
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Container(child: Text('Transaction Time', style: TextStyle(fontSize: 16.0, color: Colors.black),)),
-                                         Text('${outputFormat.format(DateTime.parse(DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(widget.time).toString()))}', style: TextStyle(fontSize: 16.0, color: Colors.black),),
-                                       ],
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Divider(
-                                       color: Colors.black,
-                                       height: 5.0,
-                                     ),
-                                   ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 30.0, top: 30.0, left: 35.0),
+                            child: Text('${widget.description} of ₦${widget.amount} to ${widget.recipient} was successful', style: TextStyle(fontSize: 18.0, color: Colors.black),),
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 80.0,
+                      Container(
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only( top: 10.0, left: 35.0),
+                            child: Row(
+                              children: [
+                                Expanded(child: Text('${widget.token != null ? 'Token: ${widget.token}' : ''}', style: TextStyle(fontSize: 18.0, color: Colors.black, fontWeight: FontWeight.bold))),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                       Container(
-                        margin: EdgeInsets.only(left: 30, right: 30),
-                        color: Colors.deepPurple,
-                        child: FlatButton(
-                          onPressed: (){
-                            Navigator.of(context).pop();
-                          },
-                          color: Colors.deepPurple,
-                          child: Text('Close', style: TextStyle(color: Colors.white),),
-                        )
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only( top: 5.0, left: 35.0),
+                            child: Row(
+                              children: [
+                                Expanded(child: Text('${widget.serial != null ? 'SN: ${widget.serial}' : ''}', style: TextStyle(fontSize: 18.0, color: Colors.black, fontWeight: FontWeight.bold))),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.0,),
+                      Container(
+                        child: Center(child: Image.asset('assets/Icon/oin.png', width: 130.0, height: 130.0,)),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Container(
+                        child: Center(
+                          child:  Text('You have earn ${widget.coinEarned != null ? widget.coinEarned : '0'} ZIT coin!', style: TextStyle(fontSize: 17.0, color: Colors.black),),
+                        ),
+                      ),
+
+                      SizedBox(
+                        height: 70.0,
+                      ),
+                      Container(
+                          child: Center(
+                            child: FlatButton(
+                              onPressed: (){
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            WalletStartupScreen()));
+                              },
+                              height: 50.0,
+                              color: Colors.deepPurple,
+                              child: Text('Finish Transaction', style: TextStyle(color: Colors.white),),
+                            ),
+                          )
                       ),
                     ],
                   ),

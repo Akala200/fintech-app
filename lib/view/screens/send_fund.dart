@@ -62,11 +62,11 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       _items = [
         {
           'value': '$walletMainSlug',
-          'label': '$walletMainSlug  $walletMain',
+          'label': '$walletMainSlug  ₦$walletMain',
         },
         {
           'value': '$extraWalletSlug',
-          'label': '$extraWalletSlug  $extraWallet',
+          'label': '$extraWalletSlug  ₦$extraWallet',
         },
       ];
     });
@@ -75,6 +75,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
     return "Success";
   }
+
+
 
 
   void getFreshData() async {

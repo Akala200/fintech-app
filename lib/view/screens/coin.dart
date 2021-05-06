@@ -157,7 +157,7 @@ class _CoinScreenState extends State<CoinScreen> {
             child: Column(
               children: [
                 CustomAppBar(
-                    title: 'My Wallet', color: ColorResources.COLOR_WHITE),
+                    title: 'My ZIT', color: ColorResources.COLOR_WHITE),
                 Expanded(
                   child: ListView(
                     children: [
@@ -190,11 +190,11 @@ class _CoinScreenState extends State<CoinScreen> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text('eUcoin Conversion',
+                                      Text('ZIT Conversion',
                                           style: TextStyle( fontSize: 18.0,
                                               color: Colors.deepPurple)),
                                       SizedBox(height: 20.0,),
-                                      Text('eUcoin | Loan | Insurance | Allowance',
+                                      Text('ZIT | Loan | Insurance | Allowance',
                                           style: TextStyle( fontSize: 16.0,
                                               color: Colors.deepPurple)),
                                     ],
@@ -242,70 +242,22 @@ class _CoinScreenState extends State<CoinScreen> {
                                         padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
                                         child: Column(
                                           children: [
-                                            Text('eUcoin',
-                                                style: TextStyle( fontSize: 18.0,
-                                                    color: Colors.white)),
-                                            SizedBox(height: 5.0,),
-                                            Text('₦ $coinBalance',
-                                                style: TextStyle( fontSize: 20.0,
-                                                    color: Colors.white))
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20.0,
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 30, right: 30),
-                        height: 100,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                },
-                                child: Container(
-                                  width: 90,
-                                  height: 120,
-                                  decoration: BoxDecoration(
-                                    color: Colors.pink.shade400,
-                                    borderRadius: BorderRadius.circular(7),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        spreadRadius: 1,
-                                        blurRadius: 10,
-                                        offset: Offset(0, 3),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Image.asset('assets/Icon/oin.png', fit: BoxFit.scaleDown),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              child: Text('$benefitsSlug',
-                                                  style: TextStyle( fontSize: 17.0,
-                                                      color: Colors.white)),
+                                            Align(
+                                              alignment: Alignment.bottomLeft,
+                                              child: Container(
+                                                width: 145.0,
+                                                child: Text('ZIT',
+                                                    style: TextStyle( fontSize: 18.0,
+                                                        color: Colors.white)),
+                                              ),
                                             ),
                                             SizedBox(height: 5.0,),
-                                            Text('₦ $benefit',
-                                                style: TextStyle( fontSize: 20.0,
-                                                    color: Colors.white))
+                                            Container(
+                                              width: 145.0,
+                                              child: Text('$coinBalance.00',
+                                                  style: TextStyle( fontSize: 20.0,
+                                                      color: Colors.white)),
+                                            )
                                           ],
                                         ),
                                       ),
@@ -348,19 +300,29 @@ class _CoinScreenState extends State<CoinScreen> {
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.all(20.0),
-                                        child: Image.asset('assets/Icon/oin.png', fit: BoxFit.scaleDown),
+                                        child: Image.asset('assets/Icon/loan2.png', fit: BoxFit.scaleDown),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
                                         child: Column(
                                           children: [
-                                            Text('$loanSlug',
-                                                style: TextStyle( fontSize: 17.0,
-                                                    color: Colors.white)),
+                                            Align(
+                                              alignment: Alignment.topLeft,
+                                              child: Container(
+                                                child: Text('$loanSlug',
+                                                    style: TextStyle( fontSize: 17.5,
+                                                        color: Colors.white)),
+                                              ),
+                                            ),
                                             SizedBox(height: 5.0,),
-                                            Text('₦ $loanBenefit',
-                                                style: TextStyle( fontSize: 20.0,
-                                                    color: Colors.white))
+                                            Align(
+                                              alignment: Alignment.topLeft,
+                                              child: Container(
+                                                child: Text('₦$loanBenefit.00',
+                                                    style: TextStyle( fontSize: 20.0,
+                                                        color: Colors.white)),
+                                              ),
+                                            )
                                           ],
                                         ),
                                       ),
@@ -372,6 +334,7 @@ class _CoinScreenState extends State<CoinScreen> {
                           ],
                         ),
                       ),
+
                       SizedBox(height: 25),
                       Container(
                         margin: EdgeInsets.only(left: 30, right: 30),
@@ -399,20 +362,91 @@ class _CoinScreenState extends State<CoinScreen> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Image.asset('assets/Icon/oin.png', fit: BoxFit.scaleDown),
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(20.0),
+                                            child: Image.asset('assets/Icon/insurance.png', fit: BoxFit.scaleDown),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 25.0, bottom: 10.0),
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Text('Life $insuranceSlug',
+                                                      style: TextStyle( fontSize: 17.5,
+                                                          color: Colors.white)),
+                                                ),
+                                                SizedBox(height: 5.0,),
+                                                Container(
+                                                  child: Text('₦$insuranceBenefit.00',
+                                                      style: TextStyle( fontSize: 20.0,
+                                                          color: Colors.white)),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 30, right: 30),
+                        height: 100,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                },
+                                child: Container(
+                                  width: 90,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepPurple.shade900,
+                                    borderRadius: BorderRadius.circular(7),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 1,
+                                        blurRadius: 10,
+                                        offset: Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                                        padding: const EdgeInsets.only(left: 20.0),
+                                        child: Image.asset('assets/Icon/pension.png', width: 55.0,),
+                                      ),
+                                      SizedBox(width: 20.0,),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 30.0, bottom: 20.0),
                                         child: Column(
                                           children: [
-                                            Text('$insuranceSlug',
-                                                style: TextStyle( fontSize: 18.0,
-                                                    color: Colors.white)),
-                                            SizedBox(height: 5.0,),
                                             Expanded(
-                                              child: Text('₦ $insuranceBenefit',
+                                              child: Container(
+                                                width: 160.0,
+                                                child: Text('Pension Allowance',
+                                                    style: TextStyle( fontSize: 17.0,
+                                                        color: Colors.white)),
+                                              ),
+                                            ),
+                                            Container(
+                                              width: 160.0,
+                                              child: Text('₦ $benefit.00',
                                                   style: TextStyle( fontSize: 20.0,
                                                       color: Colors.white)),
                                             )

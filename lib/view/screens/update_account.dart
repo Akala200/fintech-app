@@ -41,6 +41,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
   var gender;
   var _myActivity;
+  var _validate;
+  var _validated;
+  var  _validates;
+  var  _validatess;
+  var  _validateds;
+
+
   List data = [
     {
       "name": "Male",
@@ -129,7 +136,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
 
@@ -172,6 +178,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
                           },
                           decoration: InputDecoration(
                             hintText: "First Name",
+                            labelText: "First Name",
+                            labelStyle: TextStyle(color: Colors.deepPurple),
+                            focusedBorder:OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
                           ),
                         ),
                       ),
@@ -195,6 +207,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
                           },
                           decoration: InputDecoration(
                             hintText: "Last Name",
+                            labelText: "Last Name",
+                            labelStyle: TextStyle(color: Colors.deepPurple),
+                            focusedBorder:OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
                           ),
                         ),
                       ),
@@ -218,10 +236,14 @@ class _UpdateScreenState extends State<UpdateScreen> {
                           },
                           decoration: InputDecoration(
                             hintText: "Email",
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                          ),
+                            labelText: "Email",
+                            labelStyle: TextStyle(color: Colors.deepPurple),
+                            focusedBorder:OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
                         ),
+                      ),
                       ),
 //https://euzzitstaging.com.ng/api/v1/auth/register
                     ],
@@ -267,6 +289,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
                           },
                           decoration: InputDecoration(
                             hintText: "Phone Number",
+                            labelText:  "Phone Number",
+                            labelStyle: TextStyle(color: Colors.deepPurple),
+                            focusedBorder:OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
                           ),
                         ),
                       ),
@@ -291,8 +319,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
                           },
                           decoration: InputDecoration(
                             hintText: "Username",
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
+                            labelText:   "Username",
+                            labelStyle: TextStyle(color: Colors.deepPurple),
+                            focusedBorder:OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
                           ),
                         ),
                       ),

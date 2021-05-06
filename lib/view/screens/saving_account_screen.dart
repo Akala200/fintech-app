@@ -206,7 +206,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                   width: 90,
                                   height: 120,
                                   decoration: BoxDecoration(
-                                    color: Colors.deepPurple.shade900,
+                                    color: Colors.purple,
                                     borderRadius: BorderRadius.circular(7),
                                     boxShadow: [
                                       BoxShadow(
@@ -227,13 +227,22 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                         padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
                                         child: Column(
                                           children: [
-                                            Text('$balanceExtraSlug',
-                                                style: TextStyle( fontSize: 16.0,
-                                                    color: Colors.white)),
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Container(
+                                                width: 160.0,
+                                                child: Text('$mainBalance',
+                                                    style: TextStyle( fontSize: 16.0,
+                                                        color: Colors.white)),
+                                              ),
+                                            ),
                                             SizedBox(height: 5.0,),
-                                            Text('₦ $balanceExtra',
-                                                style: TextStyle( fontSize: 16.0,
-                                                    color: Colors.white))
+                                            Container(
+                                              width: 160.0,
+                                              child: Text('₦$mainRealBalance.00',
+                                                  style: TextStyle( fontSize: 16.0,
+                                                      color: Colors.white)),
+                                            )
                                           ],
                                         ),
                                       ),
@@ -261,7 +270,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                   width: 90,
                                   height: 120,
                                   decoration: BoxDecoration(
-                                    color: Colors.purple,
+                                    color: Colors.deepPurple.shade900,
                                     borderRadius: BorderRadius.circular(7),
                                     boxShadow: [
                                       BoxShadow(
@@ -282,13 +291,19 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                         padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
                                         child: Column(
                                           children: [
-                                            Text('$mainBalance',
-                                                style: TextStyle( fontSize: 16.0,
-                                                    color: Colors.white)),
+                                            Container(
+                                              width: 160.0,
+                                              child: Text('$balanceExtraSlug',
+                                                  style: TextStyle( fontSize: 16.0,
+                                                      color: Colors.white)),
+                                            ),
                                             SizedBox(height: 5.0,),
-                                            Text('₦ $mainRealBalance',
-                                                style: TextStyle( fontSize: 16.0,
-                                                    color: Colors.white))
+                                            Container(
+                                              width: 160.0,
+                                              child: Text('₦$balanceExtra.00',
+                                                  style: TextStyle( fontSize: 16.0,
+                                                      color: Colors.white)),
+                                            )
                                           ],
                                         ),
                                       ),
@@ -300,6 +315,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                           ],
                         ),
                       ),
+
                       SizedBox(height: 25),
                       Padding(
                         padding: EdgeInsets.only(left: 20),
@@ -380,8 +396,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                                                   style: poppinsSemiBold.copyWith(
                                                                       fontSize: Dimensions
                                                                           .FONT_SIZE_SMALL,
-                                                                      color: ColorResources
-                                                                          .COLOR_ROYAL_BLUE),
+                                                                      color: snapshot.data[index]["type"] == 'DEBIT' ? Colors.redAccent : Colors.green),
                                                                 ),
                                                               ],
                                                             ),
@@ -401,7 +416,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                                             Text(
                                                               '₦ ${snapshot.data[index]
                                                               ["amount"]}',
-                                                              style: TextStyle(fontSize: 17.0, color: Colors.red),
+                                                              style: TextStyle(fontSize: 17.0, color: snapshot.data[index]["type"] == 'DEBIT' ? Colors.redAccent : Colors.green),
                                                             ),
 
                                                           ],
@@ -433,13 +448,17 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                         }));
                               }
                             }),
-                      )
+                      ),
+                      SizedBox(
+                        height: 40.0,
+                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),
+
         ],
       ),
     );

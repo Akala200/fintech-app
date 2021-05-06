@@ -56,106 +56,120 @@ class _cableTvScreen1State extends State<cableTvScreen1> {
 
     return Scaffold(
       backgroundColor: ColorResources.COLOR_REGISTRATION_BACKGROUND,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  CustomAppBar(title: 'CableTv Subscription', color: Colors.deepPurple),
-                  Container(
-                    width: double.infinity,
-                    height: 100.0,
-                    child:   GestureDetector(
-                      onTap: (){
-                       Navigator.of(context).push(MaterialPageRoute(builder: (context) => DSTVScreen1()));
-                      },
-                      child: Card(
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: const ListTile(
-                                leading: CircleAvatar(
-                                  radius: 42,
-                                  backgroundImage: AssetImage('assets/Icon/dstv.png'),
-                                ),
-                                title: Text('DSTV', style: TextStyle(color: Colors.deepPurple)),
-                                subtitle: Text('Cable payment', style: TextStyle(color: Colors.deepPurple)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ), ),
-                  SizedBox(height: 10.0,),
-
-                  Container(
-                    width: double.infinity,
-                    height: 100.0,
-                    child:   GestureDetector(
-                      onTap: (){
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => GOTVScreen1()));
-                      },
-                      child: Card(
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: const ListTile(
-                                leading: CircleAvatar(
-                                  radius: 40,
-                                  backgroundImage: AssetImage('assets/Icon/gotv.png'),
-                                ),
-                                title: Text('GOTV', style: TextStyle(color: Colors.deepPurple),),
-                                subtitle: Text('Cable payment', style: TextStyle(color: Colors.deepPurple)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ), ),
-                  SizedBox(height: 10.0,),
-
-                  Container(
-                    width: double.infinity,
-                    height: 100.0,
-                    child:   GestureDetector(
-                      onTap: (){
-                        //Toast.show('This service is currently not available', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-
-                         Navigator.of(context).push(MaterialPageRoute(builder: (context) => StartimesScreen1()));
-                      },
-                      child: Card(
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  radius: 43,
-                                  backgroundImage: AssetImage('assets/Icon/startimes.png'),
-                                ),
-                                title:  Text('Startimes', style: TextStyle(color: Colors.deepPurple),),
-                                subtitle: Text('Cable payment',  style: TextStyle(color: Colors.deepPurple)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ), )
-                ],
-              )
-
+      body: Stack(
+        children: [
+          Container(
+            child: Image.asset(
+              'assets/Illustration/Untitled-1.png',
+              width: 500.0,
+              height: 340.0,
+              fit: BoxFit.fill,
+            ),
           ),
-        ),
-      ),
+          SafeArea(
+            child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      CustomAppBar(title: 'CableTv Subscription', color: Colors.white),
+                      SizedBox(height: 50.0,),
+
+                      Container(
+                        width: double.infinity,
+                        height: 100.0,
+                        child:   GestureDetector(
+                          onTap: (){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => DSTVScreen1()));
+                          },
+                          child: Card(
+                            color: Colors.white,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: const ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 42,
+                                      backgroundImage: AssetImage('assets/Icon/dstv.png'),
+                                    ),
+                                    title: Text('DSTV', style: TextStyle(color: Colors.deepPurple)),
+                                    subtitle: Text('Cable payment', style: TextStyle(color: Colors.deepPurple)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ), ),
+                      SizedBox(height: 10.0,),
+
+                      Container(
+                        width: double.infinity,
+                        height: 100.0,
+                        child:   GestureDetector(
+                          onTap: (){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => GOTVScreen1()));
+                          },
+                          child: Card(
+                            color: Colors.white,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: const ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 40,
+                                      backgroundImage: AssetImage('assets/Icon/gotv.png'),
+                                    ),
+                                    title: Text('GOTV', style: TextStyle(color: Colors.deepPurple),),
+                                    subtitle: Text('Cable payment', style: TextStyle(color: Colors.deepPurple)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ), ),
+                      SizedBox(height: 10.0,),
+
+                      Container(
+                        width: double.infinity,
+                        height: 100.0,
+                        child:   GestureDetector(
+                          onTap: (){
+                            //Toast.show('This service is currently not available', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => StartimesScreen1()));
+                          },
+                          child: Card(
+                            color: Colors.white,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 43,
+                                      backgroundImage: AssetImage('assets/Icon/startimes.png'),
+                                    ),
+                                    title:  Text('Startimes', style: TextStyle(color: Colors.deepPurple),),
+                                    subtitle: Text('Cable payment',  style: TextStyle(color: Colors.deepPurple)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ), )
+                    ],
+                  ),
+                )
+
+            ),
+          ),
+        ],
+      )
     );
   }
 }

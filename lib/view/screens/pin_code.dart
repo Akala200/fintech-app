@@ -189,18 +189,8 @@ class _PinScreenScreenState extends State<PinScreen> {
 
                     Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
                         overlayColor: Color(0x99E8EAF6));
-                    final http.Response response = await http.post(
-                      url,
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                      },
-                      body: jsonEncode(<String, String>{
-                        'code': code,
-                      }),
-                    );
 
-                    if (response.statusCode == 200) {
-                      final http.Response response1 = await http.post(
+                      final http.Response response = await http.post(
                         url1,
                         headers: <String, String>{
                           'Content-Type': 'application/json; charset=UTF-8',
@@ -209,7 +199,7 @@ class _PinScreenScreenState extends State<PinScreen> {
                           'transaction_ref': ref,
                         }),
                       );
-                      if (response1.statusCode == 200) {
+                      if (response.statusCode == 200) {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SavingAccountScreen()));
                       } else {
                         var st = jsonDecode(response.body);
@@ -217,14 +207,7 @@ class _PinScreenScreenState extends State<PinScreen> {
                         print(response.body);
                         Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
                       }
-                    } else {
-                      Loader.hide();
-                      var st = jsonDecode(response.body);
-                      var message = st["message"];
-                      print(response.body);
-                      Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
 
-                    }
                   },
                 ),
               ),

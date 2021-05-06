@@ -3,6 +3,7 @@ import 'package:euzzit/view/screens/Activate_account_settings.dart';
 import 'package:euzzit/view/screens/Upgrade.dart';
 import 'package:euzzit/view/screens/activation.dart';
 import 'package:euzzit/view/screens/lifeline.dart';
+import 'package:euzzit/view/screens/merchant_dashboard.dart';
 import 'package:euzzit/view/screens/settings_screen.dart';
 import 'package:euzzit/view/screens/step/login.dart';
 import 'package:euzzit/view/screens/update_account.dart';
@@ -265,15 +266,15 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                     ],
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => PinUpdateScreen()));
-                        },
-                        child: Row(
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => MerchantDashboardScreen()));
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
                           children: [
                             Icon(
                               Icons.label,
@@ -288,13 +289,13 @@ class _SettingScreenState extends State<SettingScreen> {
                                     color: Colors.deepPurple, fontSize: 15.0)),
                           ],
                         ),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios_sharp,
-                        color: Colors.blueGrey,
-                        size: 20.0,
-                      ),
-                    ],
+                        Icon(
+                          Icons.arrow_forward_ios_sharp,
+                          color: Colors.blueGrey,
+                          size: 20.0,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Container(

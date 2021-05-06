@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:euzzit/view/screens/finish_transaction.dart';
 import 'package:euzzit/view/screens/saving_account_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -120,7 +121,7 @@ class _AirtimePINScreenState extends State<AirtimePINScreen> {
                         child: PinCodeTextField(
                           length: 4,
                           appContext: context,
-                          obscureText: false,
+                          obscureText: true,
                           keyboardType: TextInputType.number,
                           animationType: AnimationType.fade,
                           validator: (v) {
@@ -187,30 +188,19 @@ class _AirtimePINScreenState extends State<AirtimePINScreen> {
                     var id =  prefs.getInt('AirtimeService_id');
                     var wallet =  prefs.getString('wallet');
 //dstvaccount
-                    var url = "https://euzzitstaging.com.ng/api/v1/auth/activate_account";
                     var url1 = "https://euzzitstaging.com.ng/api/v1/user/services/airtime/purchase";
 
                     Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
                         overlayColor: Color(0x99E8EAF6));
                     var token =  prefs.getString('accessToken');
 
-                    final http.Response response = await http.post(
-                      url,
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'Authorization': 'Bearer $token',
-                      },
-                      body: jsonEncode(<String, String>{
-                        'code': code,
-                      }),
-                    );
-
-                    if (response.statusCode == 200) {
                       final http.Response response = await http.post(
                         url1,
                         headers: <String, String>{
                           'Content-Type': 'application/json; charset=UTF-8',
+                          'Accept': 'application/json',
                           'Authorization': 'Bearer $token',
+                          'pin': '$code'
 
                         },
                         body: jsonEncode({
@@ -224,23 +214,18 @@ class _AirtimePINScreenState extends State<AirtimePINScreen> {
                       if (response.statusCode == 200) {
                         var st = jsonDecode(response.body);
                         print(st);
+                        var coinEarned = st["data"]["coin_earned"];
                         Toast.show('Airtime purchase successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
 
-                        Navigator.pop(context);
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => FinishTransactionScreen(type: 'Airtime Purchase Was Successful', amount: amount.toString(), recipient: phone, from: wallet, description: 'EUZZIT Airtime purchase', coinEarned: coinEarned,)));
+
                       } else {
                         var st = jsonDecode(response.body);
                         var message = st["message"];
                         print(response.body);
                         Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
                       }
-                    } else {
-                      Loader.hide();
-                      var st = jsonDecode(response.body);
-                      var message = st["message"];
-                      print(response.body);
-                      Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
 
-                    }
                   },
                 ),
               ),

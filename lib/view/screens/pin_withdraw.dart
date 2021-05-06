@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:euzzit/view/screens/finish_transaction.dart';
 import 'package:euzzit/view/screens/saving_account_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -74,15 +75,18 @@ class _WithdrawPinScreenState extends State<WithdrawPinScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width,
-                child: Stack(children: [
-                  IconButton(
-                    icon: Icon(Icons.chevron_left, size: 30, color: Colors.black),
-                    onPressed: () =>      Navigator.pop(context),
-                  ),
-                ]),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  child: Stack(children: [
+                    IconButton(
+                      icon: Icon(Icons.chevron_left, size: 30, color: Colors.black),
+                      onPressed: () =>      Navigator.pop(context),
+                    ),
+                  ]),
+                ),
               ),
               SizedBox(height: 150.0,),
               Center(
@@ -119,7 +123,7 @@ class _WithdrawPinScreenState extends State<WithdrawPinScreen> {
                         child: PinCodeTextField(
                           length: 4,
                           appContext: context,
-                          obscureText: false,
+                          obscureText: true,
                           keyboardType: TextInputType.number,
                           animationType: AnimationType.fade,
                           validator: (v) {
@@ -189,43 +193,42 @@ class _WithdrawPinScreenState extends State<WithdrawPinScreen> {
 
                     Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
                         overlayColor: Color(0x99E8EAF6));
-                    final http.Response response = await http.post(
-                      url,
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'Authorization': 'Bearer $token',
-                      },
-                      body: jsonEncode(<String, String>{
-                        'phone': code,
-                        'code': code,
-                      }),
-                    );
 
-                    if (response.statusCode == 200) {
-                      var token =  prefs.getString('accessToken');
-                      var bank_id =  prefs.getString('bank_id');
+                      var bank_id =  prefs.getInt('bank_id');
                       var accountNumber_withdraw =  prefs.getString('accountNumber_withdraw');
                       var amount_withdraw =  prefs.getString('amount_withdraw');
+                      var wallet =  prefs.getString('wallet_withdraw');
 
                       final http.Response response = await http.post(
                         url1,
                         headers: <String, String>{
                           'Content-Type': 'application/json; charset=UTF-8',
+                          'Accept': 'application/json',
                           'Authorization': 'Bearer $token',
-
+                          'pin': '$code'
                         },
                         body: jsonEncode(<String, String>{
                           'amount': amount_withdraw,
                           'wallet': 'main',
                           'account_no': accountNumber_withdraw,
-                          'bank_id': bank_id
+                          'bank_id': bank_id.toString()
                         }),
                       );
                       if (response.statusCode == 200) {
                         Loader.hide();
                         var st = jsonDecode(response.body);
-                        Toast.show('Transaction Successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SavingAccountScreen()));
+                        Toast.show('Transaction Successful', context,
+                            duration: Toast.LENGTH_LONG,
+                            gravity: Toast.BOTTOM,
+                            backgroundColor: Colors.green);
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => FinishTransactionScreen(
+                              type: 'Transfer Was Successful',
+                              amount: amount_withdraw,
+                              recipient: accountNumber_withdraw,
+                              from: wallet,
+                              description: 'EUZZIT wallet to wallet transfer',
+                            )));
                       } else {
                         Loader.hide();
                         var st = jsonDecode(response.body);
@@ -233,14 +236,7 @@ class _WithdrawPinScreenState extends State<WithdrawPinScreen> {
                         print(response.body);
                         Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
                       }
-                    } else {
-                      Loader.hide();
-                      var st = jsonDecode(response.body);
-                      var message = st["message"];
-                      print(response.body);
-                      Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
 
-                    }
                   },
                 ),
               ),

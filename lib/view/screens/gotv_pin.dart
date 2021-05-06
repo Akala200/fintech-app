@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:euzzit/view/screens/finish_transaction.dart';
 import 'package:euzzit/view/screens/saving_account_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -120,7 +121,7 @@ class _GOTVPINScreenState extends State<GOTVPINScreen> {
                         child: PinCodeTextField(
                           length: 4,
                           appContext: context,
-                          obscureText: false,
+                          obscureText: true,
                           keyboardType: TextInputType.number,
                           animationType: AnimationType.fade,
                           validator: (v) {
@@ -182,11 +183,10 @@ class _GOTVPINScreenState extends State<GOTVPINScreen> {
                   btnTxt: 'Authorize',
                   onTap: () async {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
-                    var phone =  prefs.getString('phone');
                     var amount =  prefs.getInt('GOTVAmount');
                     var id =  prefs.getInt('gotvService_id');
                     var wallet =  prefs.getString('wallet');
-                    var account =  prefs.getInt('gotvaccount');
+                    var account =  prefs.getString('gotvaccount');
 //dstvaccount
                     var url = "https://euzzitstaging.com.ng/api/v1/auth/activate_account";
                     var url1 = "https://euzzitstaging.com.ng/api/v1/user/services/cabletv/purchase";
@@ -195,23 +195,13 @@ class _GOTVPINScreenState extends State<GOTVPINScreen> {
                         overlayColor: Color(0x99E8EAF6));
                     var token =  prefs.getString('accessToken');
 
-                    final http.Response response = await http.post(
-                      url,
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'Authorization': 'Bearer $token',
-                      },
-                      body: jsonEncode(<String, String>{
-                        'code': code,
-                      }),
-                    );
 
-                    if (response.statusCode == 200) {
                       final http.Response response = await http.post(
                         url1,
                         headers: <String, String>{
                           'Content-Type': 'application/json; charset=UTF-8',
                           'Authorization': 'Bearer $token',
+                          'pin': '$code'
 
                         },
                         body: jsonEncode({
@@ -225,23 +215,20 @@ class _GOTVPINScreenState extends State<GOTVPINScreen> {
                       if (response.statusCode == 200) {
                         var st = jsonDecode(response.body);
                         print(st);
-                        Toast.show('DSTV subscription successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                        var mechantId = 'Merchant with $id';
 
-                        Navigator.pop(context);
+                        var coinEarned = st["data"]["coin_earned"];
+                        Toast.show('subscription successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
+
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => FinishTransactionScreen(type: 'GOTV Subscription Was Successful', amount: amount.toString(), coinEarned: coinEarned,  recipient: mechantId, from: wallet, description: 'EUZZIT GOTV subscription',)));
+
                       } else {
                         var st = jsonDecode(response.body);
                         var message = st["message"];
                         print(response.body);
                         Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
                       }
-                    } else {
-                      Loader.hide();
-                      var st = jsonDecode(response.body);
-                      var message = st["message"];
-                      print(response.body);
-                      Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
 
-                    }
                   },
                 ),
               ),

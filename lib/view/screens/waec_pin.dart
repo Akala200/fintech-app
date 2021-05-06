@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:euzzit/view/screens/finish_transaction.dart';
 import 'package:euzzit/view/screens/saving_account_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -75,15 +76,18 @@ class _WaecPinScreenState extends State<WaecPinScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width,
-                child: Stack(children: [
-                  IconButton(
-                    icon: Icon(Icons.chevron_left, size: 30, color: Colors.black),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ]),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  child: Stack(children: [
+                    IconButton(
+                      icon: Icon(Icons.chevron_left, size: 30, color: Colors.black),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ]),
+                ),
               ),
               SizedBox(height: 150.0,),
               Center(
@@ -120,7 +124,7 @@ class _WaecPinScreenState extends State<WaecPinScreen> {
                         child: PinCodeTextField(
                           length: 4,
                           appContext: context,
-                          obscureText: false,
+                          obscureText: true,
                           keyboardType: TextInputType.number,
                           animationType: AnimationType.fade,
                           validator: (v) {
@@ -196,23 +200,13 @@ class _WaecPinScreenState extends State<WaecPinScreen> {
                         overlayColor: Color(0x99E8EAF6));
                     var token =  prefs.getString('accessToken');
 
-                    final http.Response response = await http.post(
-                      url,
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'Authorization': 'Bearer $token',
-                      },
-                      body: jsonEncode(<String, String>{
-                        'code': code,
-                      }),
-                    );
-
-                    if (response.statusCode == 200) {
                       final http.Response response = await http.post(
                         url1,
                         headers: <String, String>{
                           'Content-Type': 'application/json; charset=UTF-8',
                           'Authorization': 'Bearer $token',
+                          'Accept': 'application/json',
+                          'pin': '$code'
 
                         },
                         body: jsonEncode({
@@ -220,28 +214,24 @@ class _WaecPinScreenState extends State<WaecPinScreen> {
                           'account': account,
                           'wallet': wallet,
                           'service_id': id,
+                          'code': 'WAEC PIN'
                         }),
                       );
-                      if (response.statusCode == 200) {
-                        Loader.hide();
-                        var st = jsonDecode(response.body);
-                        print(st);
-                        Navigator.pop(context);
-                      } else {
-                        Loader.hide();
-                        var st = jsonDecode(response.body);
-                        var message = st["message"];
-                        print(response.body);
-                        Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-                      }
+                    Loader.hide();
+                    if (response.statusCode == 200) {
+                      var st = jsonDecode(response.body);
+                      print(st);
+                      var mechantId = 'Merchant with $id';
+                      var coinEarned = st["data"]["coin_earned"];
+                      Toast.show('WAEC Form Purchase Was Successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => FinishTransactionScreen(type: 'WAEC Form Purchase Was Successful', amount: amount.toString(), coinEarned: coinEarned,  recipient: 'WAEC', from: wallet, description: 'EUZZIT WAEC Form Purchase',)));
                     } else {
-                      Loader.hide();
                       var st = jsonDecode(response.body);
                       var message = st["message"];
                       print(response.body);
-                      Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-
+                      Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
                     }
+
                   },
                 ),
               ),

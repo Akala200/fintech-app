@@ -1,5 +1,6 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:euzzit/Network/auth.dart';
+import 'package:euzzit/view/screens/activate_account_pin.dart';
 import 'package:euzzit/view/screens/airtime_pin.dart';
 import 'package:euzzit/view/screens/buy_airtime.dart';
 import 'package:euzzit/view/screens/buy_electricity.dart';
@@ -74,11 +75,11 @@ class _ActivateSettingScreen1State extends State<ActivateSettingScreen1> {
       _items = [
         {
           'value': '$walletMainSlug',
-          'label': '$walletMainSlug  $walletMain',
+          'label': '$walletMainSlug  ₦$walletMain',
         },
         {
           'value': '$extraWalletSlug',
-          'label': '$extraWalletSlug  $extraWallet',
+          'label': '$extraWalletSlug  ₦$extraWallet',
         },
       ];
     });
@@ -114,8 +115,17 @@ class _ActivateSettingScreen1State extends State<ActivateSettingScreen1> {
                       type: SelectFormFieldType.dropdown, // or can be dialog
                       initialValue: 'null',
                       icon: Icon(Icons.account_balance_wallet),
-                      labelText: 'Choose Wallet',
                       items: _items,
+                      decoration: InputDecoration(
+                        hintText: "Choose Wallet",
+                        labelText: "Choose Wallet",
+                        labelStyle: TextStyle(color: Colors.deepPurple),
+                        errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                        focusedBorder:OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                      ),
                       onChanged: (value) async {
                         setState(() {
                           wallet = value;
@@ -135,7 +145,7 @@ class _ActivateSettingScreen1State extends State<ActivateSettingScreen1> {
               padding: const EdgeInsets.symmetric(
                   horizontal: Dimensions.PADDING_SIZE_LARGE),
               child: CustomButton(
-                  btnTxt: 'ACTIVATE',
+                  btnTxt: 'INITIATE ACTIVATION',
                   onTap: () async {
                     var url =
                         "https://euzzitstaging.com.ng/api/v1/user/account_activation";
@@ -169,42 +179,9 @@ class _ActivateSettingScreen1State extends State<ActivateSettingScreen1> {
                         ),
                       )) {
                         print('pressedOK');
+                        await prefs.setString('wallet', wallet );
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ActivateAccountPINScreen()));
 
-                        Loader.show(context,
-                            progressIndicator: CircularProgressIndicator(),
-                            themeData: Theme.of(context)
-                                .copyWith(accentColor: Colors.deepPurple),
-                            overlayColor: Color(0x99E8EAF6));
-                        final http.Response response = await http.post(
-                          url,
-                          headers: <String, String>{
-                            'Content-Type': 'application/json; charset=UTF-8',
-                            'Authorization': 'Bearer $token',
-                          },
-                          body: jsonEncode({
-                            'wallet': wallet,
-                            'description': 'I am activating my account',
-                          }),
-                        );
-                        Loader.hide();
-                        if (response.statusCode == 200) {
-                          var st = jsonDecode(response.body);
-                          print(st);
-                          Toast.show('Account Successfully Activated', context,
-                              duration: Toast.LENGTH_LONG,
-                              gravity: Toast.BOTTOM,
-                              backgroundColor: Colors.green);
-
-                          Navigator.pop(context);
-                        } else {
-                          var st = jsonDecode(response.body);
-                          var message = st["message"];
-                          print(response.body);
-                          Toast.show(message, context,
-                              duration: Toast.LENGTH_LONG,
-                              gravity: Toast.BOTTOM,
-                              backgroundColor: Colors.red);
-                        }
                       }
                       return print('pressedCancel');
                     }

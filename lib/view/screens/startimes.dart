@@ -3,6 +3,7 @@ import 'package:euzzit/view/screens/dstv_pin.dart';
 import 'package:euzzit/view/screens/gotv_pin.dart';
 import 'package:euzzit/view/screens/jamb_pin.dart';
 import 'package:euzzit/view/screens/pin_code.dart';
+import 'package:euzzit/view/screens/startimes_pin.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/utility/colorResources.dart';
 import 'package:euzzit/utility/dimensions.dart';
@@ -86,11 +87,11 @@ class _StartimesState extends State<Startimes> {
       _items = [
         {
           'value': '$walletMainSlug',
-          'label': '$walletMainSlug  $walletMain',
+          'label': '$walletMainSlug  ₦$walletMain',
         },
         {
           'value': '$extraWalletSlug',
-          'label': '$extraWalletSlug  $extraWallet',
+          'label': '$extraWalletSlug  ₦$extraWallet',
         },
       ];
     });
@@ -130,7 +131,13 @@ class _StartimesState extends State<Startimes> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Amount",
+                    labelText: "Enter Amount",
+                    labelStyle: TextStyle(color: Colors.deepPurple),
                     errorText: _validate == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -156,7 +163,13 @@ class _StartimesState extends State<Startimes> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Account",
+                    labelText: "Enter Account",
+                    labelStyle: TextStyle(color: Colors.deepPurple),
                     errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -174,7 +187,15 @@ class _StartimesState extends State<Startimes> {
                   type: SelectFormFieldType.dropdown, // or can be dialog
                   initialValue: 'null',
                   icon: Icon(Icons.account_balance_wallet),
-                  labelText: 'Wallet',
+                  decoration: InputDecoration(
+                    hintText: "Select Wallet",
+                    labelText: "Select Wallet",
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
                   items: _items,
                   onChanged:(value) async {
                     setState(() {
@@ -210,7 +231,7 @@ class _StartimesState extends State<Startimes> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '${widget.product}',
+                      '${widget.product != null ? widget.product : ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -231,7 +252,7 @@ class _StartimesState extends State<Startimes> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$amount',
+                      '${amount != null ? '₦$amount': '₦0'}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -252,7 +273,7 @@ class _StartimesState extends State<Startimes> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$account',
+                      '${ account != null ? account:''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -273,7 +294,7 @@ class _StartimesState extends State<Startimes> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$wallet',
+                      '${wallet != null ? wallet: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -283,27 +304,26 @@ class _StartimesState extends State<Startimes> {
           ),
         ),
 
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
           child: CustomButton(btnTxt: 'Initiate', onTap: () async {
-            var url = "https://euzzitstaging.com.ng/api/v1/user/transfer/generate_transaction_ref";
             SharedPreferences prefs = await SharedPreferences.getInstance();
 
-
-          if ( _accountController.text.isEmpty) {
+            if ( _accountController.text.isEmpty) {
               _accountController.text.isEmpty ? _validated = true : _validate = false;
-    Toast.show('Account Number cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-    } else {
-            var finishedAmount = int.parse(amount);
-            var finishedAccount = int.parse(account);
-      await prefs.setInt('GOTVAmount', finishedAmount);
-      await prefs.setInt('gotvService_id', 24);
-      await prefs.setString('wallet', wallet);
-      await prefs.setInt('gotvaccount', finishedAccount);
+              Toast.show('Account Number cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            } else if(wallet == null){
+              Toast.show('Select a wallet', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            } else  {
+              await prefs.setString('StartimesAmount', amount);
+              await prefs.setInt('StartimesService_id', 24);
+              await prefs.setString('StartimesWallet', wallet);
+              await prefs.setString('StartimesAccount', account);
 
-      Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => GOTVPINScreen()));
-    }
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => StartimesPinScreen()));
+            }
           }),
         ),
       ],

@@ -31,6 +31,7 @@ class _WAECScreen1State extends State<WAECScreen1> {
   var count;
   var account;
   var wallet;
+  var _validated;
 
   var code;
   final TextEditingController _usernameController = TextEditingController();
@@ -106,6 +107,13 @@ class _WAECScreen1State extends State<WAECScreen1> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Account Number",
+                    labelText: "Enter Account Number",
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -123,7 +131,15 @@ class _WAECScreen1State extends State<WAECScreen1> {
                   type: SelectFormFieldType.dropdown, // or can be dialog
                   initialValue: 'null',
                   icon: Icon(Icons.account_balance_wallet),
-                  labelText: 'Wallet',
+                  decoration: InputDecoration(
+                    hintText: "Select Wallet",
+                    labelText: "Select Wallet",
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
                   items: _items,
                   onChanged:(value) async {
                     setState(() {
@@ -158,7 +174,7 @@ class _WAECScreen1State extends State<WAECScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$amount',
+                      '${amount != null ? '₦$amount': '₦0'}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -179,7 +195,7 @@ class _WAECScreen1State extends State<WAECScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$account',
+                      '${account != null ? account: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -200,7 +216,7 @@ class _WAECScreen1State extends State<WAECScreen1> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$wallet',
+                      '${wallet != null ? wallet: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -215,15 +231,30 @@ class _WAECScreen1State extends State<WAECScreen1> {
           child: CustomButton(btnTxt: 'Initiate', onTap: () async {
             var url = "https://euzzitstaging.com.ng/api/v1/user/transfer/generate_transaction_ref";
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
-                overlayColor: Color(0x99E8EAF6));
-
-            await prefs.setInt('WaecAmount', amount );
-            await prefs.setInt('service_id', 25 );
-            await prefs.setString('wallet', wallet );
-            await prefs.setString('account', account );
-            Loader.hide();
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => WaecPinScreen()));
+            if (_usernameController.text.isEmpty) {
+              setState(() {
+                _usernameController.text.isEmpty
+                    ? _validated = true
+                    : _validated = false;
+              });
+              Toast.show('Account number cannot be empty', context,
+                  duration: Toast.LENGTH_SHORT,
+                  gravity: Toast.BOTTOM,
+                  backgroundColor: Colors.red);
+            } else if (wallet == null) {
+              Toast.show('Select a wallet', context,
+                  duration: Toast.LENGTH_SHORT,
+                  gravity: Toast.BOTTOM,
+                  backgroundColor: Colors.red);
+            } else {
+              await prefs.setInt('WaecAmount', amount);
+              await prefs.setInt('service_id', 25);
+              await prefs.setString('wallet', wallet);
+              await prefs.setString('account', account);
+              Loader.hide();
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => WaecPinScreen()));
+            }
           }),
         ),
       ],

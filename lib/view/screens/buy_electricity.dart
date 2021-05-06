@@ -78,11 +78,11 @@ class _BuyElectricityState extends State<BuyElectricity> {
       _items = [
         {
           'value': '$walletMainSlug',
-          'label': '$walletMainSlug  $walletMain',
+          'label': '$walletMainSlug  ₦$walletMain',
         },
         {
           'value': '$extraWalletSlug',
-          'label': '$extraWalletSlug  $extraWallet',
+          'label': '$extraWalletSlug  ₦$extraWallet',
         },
       ];
     });
@@ -117,13 +117,18 @@ class _BuyElectricityState extends State<BuyElectricity> {
                   controller: _meterNumberController,
                   onChanged:(value) async {
                     setState(() {
-                      amount = value;
+                      account = value;
                     });
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Meter Number",
+                    labelText: 'Enter Meter Number',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
                     errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
-
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -148,8 +153,13 @@ class _BuyElectricityState extends State<BuyElectricity> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Amount",
-                    errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
-
+                    labelText: 'Enter Amount',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    errorText: _validate == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -176,7 +186,13 @@ class _BuyElectricityState extends State<BuyElectricity> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Phone Number",
+                    labelText: 'Enter Phone Number',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
                     errorText: _validates == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -194,7 +210,14 @@ class _BuyElectricityState extends State<BuyElectricity> {
                   type: SelectFormFieldType.dropdown, // or can be dialog
                   initialValue: 'null',
                   icon: Icon(Icons.account_balance_wallet),
-                  labelText: 'Wallet',
+                  decoration: InputDecoration(
+                    labelText: 'Select Wallet',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
                   items: _items,
                   onChanged:(value) async {
                     setState(() {
@@ -228,14 +251,14 @@ class _BuyElectricityState extends State<BuyElectricity> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      widget.company,
+                      '${widget.company != null ? widget.company : ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 10.0,),
-
+// '${ account != null ? account:''}',
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -249,28 +272,27 @@ class _BuyElectricityState extends State<BuyElectricity> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                        '$amount',
+                      '${amount != null ? '₦$amount': '₦0'}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 10.0,),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 35.0),
                     child: Text(
-                      'Wallet:',
+                      'Meter Number:',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$wallet',
+                      '${ account != null ? account:''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -291,12 +313,33 @@ class _BuyElectricityState extends State<BuyElectricity> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$phone',
+                      '${phone != null ? phone: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
                 ],
               ),
+              SizedBox(height: 10.0,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 35.0),
+                    child: Text(
+                      'Wallet:',
+                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 35.0),
+                    child: Text(
+                      '${wallet != null ? wallet: ''}',
+                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10.0,),
             ],
           ),
         ),
@@ -316,14 +359,16 @@ class _BuyElectricityState extends State<BuyElectricity> {
       _meterNumberController.text.isEmpty ? _validated = true : _validate = false;
     Toast.show('Meter Number cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
     } else if ( _phoneController.text.isEmpty) {
-            _phoneController.text.isEmpty ? _validated = true : _validate = false;
-              Toast.show('Meter Number cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-            } else {
+            _phoneController.text.isEmpty ? _validates = true : _validate = false;
+              Toast.show('Phone Number cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            } else if(wallet == null){
+      Toast.show('Select a wallet', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+    }  else {
       await prefs.setString('electricityAmount', amount);
       await prefs.setInt('electricityService_id', widget.service_id);
-      await prefs.setString('wallet', 'Main');
+      await prefs.setString('wallet', wallet);
       await prefs.setString('electricityAccount', account);
-      Loader.hide();
+      await prefs.setString('electricityComany', widget.company);
       Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => ElectricityPinScreen()));
     }

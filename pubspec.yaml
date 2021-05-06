@@ -55,8 +55,9 @@ dependencies:
   shimmer: 1.1.2
   select_form_field: 1.1.0
   intl: 0.16.0
-  contact_picker: ^0.0.2
   confirm_dialog: 0.1.0
+  connectivity_plus: 0.7.1
+  isw_mobile_sdk: ^1.0.0-5.6
 
 
 

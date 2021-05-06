@@ -1,26 +1,36 @@
 import 'dart:async';
-import 'package:euzzit/view/screens/setting_screen.dart';
-import 'package:euzzit/view/screens/settings_screen.dart';
+import 'dart:ffi';
+
+import 'package:euzzit/view/screens/finish_transaction.dart';
+import 'package:euzzit/view/screens/saving_account_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:euzzit/utility/colorResources.dart';
 import 'package:euzzit/utility/dimensions.dart';
+import 'package:euzzit/utility/strings.dart';
 import 'package:euzzit/utility/style.dart';
+import 'package:euzzit/view/screens/step/step_three_screen.dart';
 import 'package:euzzit/view/widgets/button/custom_button.dart';
+import 'package:euzzit/view/widgets/custom_app_bar.dart';
+import 'package:euzzit/view/screens/startup_Screen.dart';
+import 'package:euzzit/view/screens/step/step_one_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:loading/loading.dart';
+import 'package:loading/indicator/ball_pulse_indicator.dart';
 import 'package:toast/toast.dart';
 
 
-class PinUpdateScreen extends StatefulWidget {
+class StartimesPinScreen extends StatefulWidget {
   @override
-  _PinUpdateScreenState createState() => _PinUpdateScreenState();
+  _StartimesPinScreenState createState() => _StartimesPinScreenState();
 }
 
-class _PinUpdateScreenState extends State<PinUpdateScreen> {
+class _StartimesPinScreenState extends State<StartimesPinScreen> {
   String currentText = '';
   var onTapRecognizer;
   var code;
@@ -82,7 +92,7 @@ class _PinUpdateScreenState extends State<PinUpdateScreen> {
               SizedBox(height: 150.0,),
               Center(
                 child: Text(
-                  'Update Pin',
+                  'Transaction Authorization',
                   style: poppinsRegular.copyWith(
                     fontSize: 17,
                   ),
@@ -96,7 +106,7 @@ class _PinUpdateScreenState extends State<PinUpdateScreen> {
                 padding: EdgeInsets.only(left: 30, right: 20),
                 alignment: Alignment.center,
                 child: Text(
-                  'Input new pin',
+                  'Input your pin to authorize the transaction before it is approved',
                   textAlign: TextAlign.center,
                   style: montserratRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
                 ),
@@ -173,47 +183,53 @@ class _PinUpdateScreenState extends State<PinUpdateScreen> {
                   right: Dimensions.MARGIN_SIZE_DEFAULT,
                 ),
                 child: CustomButton(
-                  btnTxt: 'Update Pin',
+                  btnTxt: 'Authorize',
                   onTap: () async {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-
-                    var url = "https://euzzitstaging.com.ng/api/v1/user/update_transaction_pin";
+                    var phone =  prefs.getString('phone');
+                    var amount =  prefs.getString('StartimesAmount');
+                    var id =  prefs.getInt('StartimesService_id');
+                    var wallet =  prefs.getString('StartimesWallet');
+                    var account =  prefs.getString('StartimesAccount');
+//dstvaccount
+                    var url = "https://euzzitstaging.com.ng/api/v1/auth/activate_account";
+                    var url1 = "https://euzzitstaging.com.ng/api/v1/user/services/cabletv/purchase";
 
                     Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
                         overlayColor: Color(0x99E8EAF6));
                     var token =  prefs.getString('accessToken');
-                    var oldCode =  prefs.getString('Oldcode');
+                    final http.Response response = await http.post(
+                      url1,
+                      headers: <String, String>{
+                        'Content-Type': 'application/json; charset=UTF-8',
+                        'Authorization': 'Bearer $token',
+                        'pin': '$code'
 
-                     final http.Response response = await http.post(
-                        url,
-                        headers: <String, String>{
-                          'Content-Type': 'application/json; charset=UTF-8',
-                          'Authorization': 'Bearer $token',
+                      },
+                      body: jsonEncode({
+                        'amount': amount,
+                        'account': account,
+                        'wallet': wallet,
+                        'service_id': id,
+                      }),
+                    );
+                    Loader.hide();
+                    if (response.statusCode == 200) {
+                      var st = jsonDecode(response.body);
+                      print(st);
+                      var mechantId = 'Merchant with $id';
 
-                        },
-                        body: jsonEncode({
-                          'transaction_pin': code,
-                          'transaction_pin_confirmation': code,
-                          'old_transaction_pin': oldCode
-                        }),
-                      );
-                      if (response.statusCode == 200) {
-                        Loader.hide();
-                        var st = jsonDecode(response.body);
-                        print(st);
-                        var message = st["message"];
-                        Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => SettingScreen()));
-                      } else {
-                        Loader.hide();
-                        var st = jsonDecode(response.body);
-                        var message = st["message"];
-                        print(response.body);
-                        Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-                      }
+                      var coinEarned = st["data"]["coin_earned"];
+                      Toast.show('subscription successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
 
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => FinishTransactionScreen(type: 'Startimes Subscription Was Successful', amount: amount.toString(), coinEarned: coinEarned,  recipient: mechantId, from: wallet, description: 'EUZZIT Startimes subscription',)));
+
+                    } else {
+                      var st = jsonDecode(response.body);
+                      var message = st["message"];
+                      print(response.body);
+                      Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+                    }
                   },
                 ),
               ),

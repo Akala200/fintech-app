@@ -46,11 +46,19 @@ class _CominSoonScreenState extends State<CominSoonScreen> {
     return Scaffold(
       body: Stack(
         children: [
+          Container(
+            child: Image.asset(
+              'assets/Illustration/Untitled-1.png',
+              width: 500.0,
+              height: 340.0,
+              fit: BoxFit.fill,
+            ),
+          ),
           SafeArea(
             child: Column(
               children: [
                 CustomAppBar(
-                     title: 'Coming Soon', color: Colors.deepPurple),
+                     title: 'Coming Soon', color: Colors.white),
                 SizedBox(height: 250.0,),
                 Center(
                       child: Container(

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:euzzit/view/screens/finish_transaction.dart';
 import 'package:euzzit/view/screens/saving_account_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,6 @@ import 'package:loading/loading.dart';
 import 'package:loading/indicator/ball_pulse_indicator.dart';
 import 'package:toast/toast.dart';
 
-
 class PinTransferScreen extends StatefulWidget {
   @override
   _PinTransferScreenState createState() => _PinTransferScreenState();
@@ -32,13 +32,19 @@ class _PinTransferScreenState extends State<PinTransferScreen> {
   String currentText = '';
   var onTapRecognizer;
   var code;
-  TextEditingController textEditingController = TextEditingController()..text = "";
+  TextEditingController textEditingController = TextEditingController()
+    ..text = "";
   StreamController<ErrorAnimationType> errorController;
 
   bool hasError = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
   var ref;
+  var amount;
+  var wallet;
+  var phone;
+  var userPhone;
+
   @override
   void initState() {
     onTapRecognizer = TapGestureRecognizer()
@@ -51,11 +57,9 @@ class _PinTransferScreenState extends State<PinTransferScreen> {
     void getFreshData() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       setState(() {
-        ref =  prefs.getString('transactionRef');
-
+        ref = prefs.getString('transactionRef');
       });
 //accountStatus
-
     }
   }
 
@@ -74,17 +78,23 @@ class _PinTransferScreenState extends State<PinTransferScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width,
-                child: Stack(children: [
-                  IconButton(
-                    icon: Icon(Icons.chevron_left, size: 30, color: Colors.black),
-                    onPressed: () =>      Navigator.pop(context),
-                  ),
-                ]),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  child: Stack(children: [
+                    IconButton(
+                      icon: Icon(Icons.chevron_left,
+                          size: 30, color: Colors.black),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ]),
+                ),
               ),
-              SizedBox(height: 150.0,),
+              SizedBox(
+                height: 150.0,
+              ),
               Center(
                 child: Text(
                   'Transaction Authorization',
@@ -103,7 +113,8 @@ class _PinTransferScreenState extends State<PinTransferScreen> {
                 child: Text(
                   'Input your pin to authorize the transaction before it is approved',
                   textAlign: TextAlign.center,
-                  style: montserratRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
+                  style: montserratRegular.copyWith(
+                      fontSize: Dimensions.FONT_SIZE_SMALL),
                 ),
               ),
               SizedBox(
@@ -115,11 +126,12 @@ class _PinTransferScreenState extends State<PinTransferScreen> {
                   child: Form(
                     key: formKey,
                     child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 30),
                         child: PinCodeTextField(
                           length: 4,
                           appContext: context,
-                          obscureText: false,
+                          obscureText: true,
                           keyboardType: TextInputType.number,
                           animationType: AnimationType.fade,
                           validator: (v) {
@@ -138,7 +150,8 @@ class _PinTransferScreenState extends State<PinTransferScreen> {
                             inactiveFillColor: Colors.transparent,
                             inactiveColor: ColorResources.COLOR_GRAY,
                             activeColor: ColorResources.COLOR_PRIMARY_DARK,
-                            activeFillColor: hasError ? Colors.orange : Colors.transparent,
+                            activeFillColor:
+                                hasError ? Colors.orange : Colors.transparent,
                           ),
                           animationDuration: Duration(milliseconds: 300),
                           backgroundColor: Colors.transparent,
@@ -180,65 +193,74 @@ class _PinTransferScreenState extends State<PinTransferScreen> {
                 child: CustomButton(
                   btnTxt: 'Authorize',
                   onTap: () async {
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                    print(code);
-                    var url = "https://euzzitstaging.com.ng/api/v1/auth/activate_account";
-                    var url1 = "https://euzzitstaging.com.ng/api/v1/user/transfer/wallet_to_wallet";
+                    print('here');
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var token = prefs.getString('accessToken');
+                    setState(() {
+                      amount = prefs.getString('amount_transfer');
+                      userPhone = prefs.getString('phone');
+                      phone = prefs.getString('phone_transfer');
+                      wallet = prefs.getString('amount_wallet');
+                    });
 
-                    Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
+                    var url1 =
+                        "https://euzzitstaging.com.ng/api/v1/user/transfer/wallet_to_wallet";
+                    Loader.show(context,
+                        progressIndicator: CircularProgressIndicator(),
+                        themeData: Theme.of(context)
+                            .copyWith(accentColor: Colors.deepPurple),
                         overlayColor: Color(0x99E8EAF6));
+
+                    print(phone);
+                    print(wallet);
+                    print(phone);
+                    print(amount);
+                    var amountRefined = int.parse(amount);
+
                     final http.Response response = await http.post(
-                      url,
+                      url1,
                       headers: <String, String>{
                         'Content-Type': 'application/json; charset=UTF-8',
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer $token',
+                        'pin': '$code'
                       },
                       body: jsonEncode(<String, String>{
-                        'code': code,
+                        'amount': amount,
+                        'to_user': phone,
+                        'wallet': wallet,
                       }),
                     );
 
                     if (response.statusCode == 200) {
-                      var token =  prefs.getString('access_token');
-                      var amount =  prefs.getString('amount_transfer');
-                      var phone =  prefs.getString('phone_transfer');
-
-                      final http.Response response = await http.post(
-                        url1,
-                        headers: <String, String>{
-                          'Content-Type': 'application/json; charset=UTF-8',
-                          'Authorization': 'Bearer $token',
-
-                        },
-                        body: jsonEncode(<String, String>{
-                          'amount': amount,
-                          'to_user':'$phone',
-                          'wallet': 'main'
-                        }),
-                      );
-                      if (response.statusCode == 200) {
-                        Loader.hide();
-                        var st = jsonDecode(response.body);
-                        Toast.show('Transaction Successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SavingAccountScreen()));
-                      } else {
-                        Loader.hide();
-                        var st = jsonDecode(response.body);
-                        var message = st["message"];
-                        print(response.body);
-                        Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-                      }
+                      Loader.hide();
+                      var st = jsonDecode(response.body);
+                      Toast.show('Transaction Successful', context,
+                          duration: Toast.LENGTH_LONG,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: Colors.green);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => FinishTransactionScreen(
+                                type: 'Transfer Was Successful',
+                                amount: amount,
+                                recipient: phone,
+                                from: wallet,
+                                description: 'EUZZIT wallet to wallet transfer',
+                              )));
                     } else {
                       Loader.hide();
                       var st = jsonDecode(response.body);
                       var message = st["message"];
                       print(response.body);
-                      Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-
+                      Toast.show(message, context,
+                          duration: Toast.LENGTH_LONG,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: Colors.red);
                     }
                   },
                 ),
               ),
-
             ],
           ),
         ),

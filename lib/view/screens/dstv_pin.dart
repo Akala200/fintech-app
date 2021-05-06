@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:euzzit/view/screens/finish_transaction.dart';
 import 'package:euzzit/view/screens/saving_account_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -75,15 +76,18 @@ class _DSTVPINScreenState extends State<DSTVPINScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width,
-                child: Stack(children: [
-                  IconButton(
-                    icon: Icon(Icons.chevron_left, size: 30, color: Colors.black),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ]),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  child: Stack(children: [
+                    IconButton(
+                      icon: Icon(Icons.chevron_left, size: 30, color: Colors.black),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ]),
+                ),
               ),
               SizedBox(height: 150.0,),
               Center(
@@ -120,7 +124,7 @@ class _DSTVPINScreenState extends State<DSTVPINScreen> {
                         child: PinCodeTextField(
                           length: 4,
                           appContext: context,
-                          obscureText: false,
+                          obscureText: true,
                           keyboardType: TextInputType.number,
                           animationType: AnimationType.fade,
                           validator: (v) {
@@ -183,7 +187,7 @@ class _DSTVPINScreenState extends State<DSTVPINScreen> {
                   onTap: () async {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     var phone =  prefs.getString('phone');
-                    var amount =  prefs.getString('dstvAmount');
+                    var amount =  prefs.getInt('dstvAmount');
                     var id =  prefs.getInt('dstvService_id');
                     var wallet =  prefs.getString('wallet');
                     var dstvCustomeraddress =  prefs.getString('dstvCustomeraddress');
@@ -199,23 +203,12 @@ class _DSTVPINScreenState extends State<DSTVPINScreen> {
                         overlayColor: Color(0x99E8EAF6));
                     var token =  prefs.getString('accessToken');
 
-                    final http.Response response = await http.post(
-                      url,
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'Authorization': 'Bearer $token',
-                      },
-                      body: jsonEncode(<String, String>{
-                        'code': code,
-                      }),
-                    );
-
-                    if (response.statusCode == 200) {
                       final http.Response response = await http.post(
                         url1,
                         headers: <String, String>{
                           'Content-Type': 'application/json; charset=UTF-8',
                           'Authorization': 'Bearer $token',
+                          'pin': '$code'
 
                         },
                         body: jsonEncode({
@@ -234,23 +227,16 @@ class _DSTVPINScreenState extends State<DSTVPINScreen> {
                       if (response.statusCode == 200) {
                         var st = jsonDecode(response.body);
                         print(st);
-                        Toast.show('DSTV subscription successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-
-                        Navigator.pop(context);
+                        var coinEarned = st["data"]["coin_earned"];
+                        Toast.show('DSTV subscription successful', context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => FinishTransactionScreen(type: 'DSTV Subscription Was Successful', amount: amount.toString(), coinEarned: coinEarned,  recipient: dstvCustomername, from: wallet, description: 'EUZZIT DSTV subscription',)));
                       } else {
                         var st = jsonDecode(response.body);
                         var message = st["message"];
                         print(response.body);
                         Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
                       }
-                    } else {
-                      Loader.hide();
-                      var st = jsonDecode(response.body);
-                      var message = st["message"];
-                      print(response.body);
-                      Toast.show(message, context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
 
-                    }
                   },
                 ),
               ),

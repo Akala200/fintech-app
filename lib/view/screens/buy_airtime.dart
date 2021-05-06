@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:euzzit/view/screens/airtime_pin.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/utility/colorResources.dart';
@@ -62,11 +63,11 @@ class _BuyAirtimeState extends State<BuyAirtime> {
       _items = [
         {
           'value': '$walletMainSlug',
-          'label': '$walletMainSlug  $walletMain',
+          'label': '$walletMainSlug  ₦$walletMain',
         },
         {
           'value': '$extraWalletSlug',
-          'label': '$extraWalletSlug  $extraWallet',
+          'label': '$extraWalletSlug  ₦$extraWallet',
         },
       ];
     });
@@ -86,12 +87,12 @@ class _BuyAirtimeState extends State<BuyAirtime> {
 
   @override
   Widget build(BuildContext context) {
-    return SendMoneyWidget(title: 'Purchase Airtime ', child: Column(
+    return SendMoneyWidget(
+        title: 'Purchase Airtime ',
+        child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(height: 30.0,),
-
-
         Container(
           child: Row(
             children: [
@@ -107,8 +108,13 @@ class _BuyAirtimeState extends State<BuyAirtime> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Amount",
+                    labelText: 'Enter Amount',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
                     errorText: _validate == true ? 'Value Can\'t Be Empty' : null,
-
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -134,8 +140,13 @@ class _BuyAirtimeState extends State<BuyAirtime> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Phone Number",
+                    labelText: 'Enter Phone Number',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
                     errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
-
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -152,8 +163,18 @@ class _BuyAirtimeState extends State<BuyAirtime> {
                 child: SelectFormField(
                   type: SelectFormFieldType.dropdown, // or can be dialog
                   initialValue: 'null',
-                  icon: Icon(Icons.account_balance_wallet),
+                  icon: Icon(Icons.account_balance_wallet, color: Colors.deepPurple,),
                   labelText: 'Wallet',
+                  style: TextStyle(color: Colors.deepPurple),
+                  cursorColor: Colors.deepPurple,
+                  decoration: InputDecoration(
+                    labelText: 'Select Wallet',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
                   items: _items,
                   onChanged:(value) async {
                     setState(() {
@@ -187,7 +208,7 @@ class _BuyAirtimeState extends State<BuyAirtime> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      widget.company,
+                      '${widget.company != null ? widget.company : ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -208,7 +229,7 @@ class _BuyAirtimeState extends State<BuyAirtime> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$amount',
+                      '${amount != null ? '₦$amount' : '₦0'}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -229,7 +250,7 @@ class _BuyAirtimeState extends State<BuyAirtime> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$phone',
+                      '${phone != null ? phone: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -250,7 +271,7 @@ class _BuyAirtimeState extends State<BuyAirtime> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$wallet',
+                      '${wallet !=null ? wallet : ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -259,31 +280,38 @@ class _BuyAirtimeState extends State<BuyAirtime> {
             ],
           ),
         ),
+        SizedBox(height: 50.0,),
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
           child: CustomButton(btnTxt: 'Buy Airtime', onTap: () async {
+            var connectivityResult =
+            await (Connectivity().checkConnectivity());
+            if (connectivityResult == ConnectivityResult.mobile ||
+                connectivityResult == ConnectivityResult.wifi) {
             var url = "https://euzzitstaging.com.ng/api/v1/user/transfer/generate_transaction_ref";
             SharedPreferences prefs = await SharedPreferences.getInstance();
-
-
             if(_amountController.text.isEmpty){
-              _amountController.text.isEmpty ? _validate = true : _validate = false;
-
+              setState(() {
+                _amountController.text.isEmpty ? _validate = true : _validate = false;
+              });
               Toast.show('Amount cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
             } else if ( _usernameController.text.isEmpty) {
-              _usernameController.text.isEmpty ? _validated = true : _validate = false;
+              setState(() {
+                _usernameController.text.isEmpty ? _validated = true : _validate = false;
+              });
               Toast.show('Phone Number cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            }  else if(wallet == null){
+              Toast.show('Select a wallet', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
             } else {
 
-              var wallet = 'Main';
               await prefs.setString('AirtimeAmount', amount );
               await prefs.setInt('AirtimeService_id', widget.service_id );
-              await prefs.setString('wallet', 'Main' );
+              await prefs.setString('wallet', wallet );
               await prefs.setString('AirtimePhone', phone );
               Navigator.of(context).push(MaterialPageRoute(builder: (context) => AirtimePINScreen()));
             }
-
+            }
           }),
         ),
       ],

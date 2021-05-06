@@ -1,4 +1,10 @@
 import 'dart:convert';
+import 'package:euzzit/view/screens/merchant_percent.dart';
+import 'package:euzzit/view/screens/merchant_view.dart';
+import 'package:euzzit/view/screens/send_money1_screen.dart';
+import 'package:euzzit/view/screens/transfer.dart';
+import 'package:euzzit/view/screens/view_transaction.dart';
+import 'package:euzzit/view/screens/withdraw.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/provider/goals_provider.dart';
 import 'package:euzzit/utility/dimensions.dart';
@@ -12,18 +18,12 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 
-class TransactionViewScreen extends StatefulWidget {
-  final  String amount;
-  final String description;
-  final String type;
-  final String time;
-
-  TransactionViewScreen({Key key, @required this.amount, @required this.description, @required this.time, @required this.type }) : super(key: key);
+class MerchantSettingScreen extends StatefulWidget {
   @override
-  _TransactionViewScreenState createState() => _TransactionViewScreenState();
+  _MerchantSettingScreenState createState() => _MerchantSettingScreenState();
 }
 
-class _TransactionViewScreenState extends State<TransactionViewScreen> {
+class _MerchantSettingScreenState extends State<MerchantSettingScreen> {
   int bannerIndex = 0;
   var balance;
   var balanceExtra;
@@ -32,6 +32,50 @@ class _TransactionViewScreenState extends State<TransactionViewScreen> {
   var mainRealBalance;
   var inputFormat = DateFormat('MM/dd/yyyy hh:mm a');
   var outputFormat = DateFormat('MM/dd/yyyy hh:mm a');
+  List<Map<String, dynamic>> _items = [];
+
+  final String url = "https://euzzitstaging.com.ng/api/v1/user/services/epin/products?service_id=27";
+
+  List data = List(); //edited line
+
+
+  Future<String> getSWData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token =  prefs.getString('accessToken');
+    final http.Response response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    var resBody = json.decode(response.body);
+    print(resBody["data"]["products"]);
+
+    setState(() {
+      data = resBody["data"]["products"];
+      var walletMain = prefs.getString('mainWalletBalance');
+      var walletMainSlug = prefs.getString('mainWalletSlug');
+      var extraWallet = prefs.getString('extraWalletBalance');
+      var extraWalletSlug = prefs.getString('extraWalletSlug');
+
+
+      _items = [
+        {
+          'value': '$walletMainSlug',
+          'label': '$walletMainSlug  $walletMain',
+        },
+        {
+          'value': '$extraWalletSlug',
+          'label': '$extraWalletSlug  $extraWallet',
+        },
+      ];
+    });
+
+
+
+    return "Success";
+  }
 
 
   void getFreshData() async {
@@ -128,6 +172,7 @@ class _TransactionViewScreenState extends State<TransactionViewScreen> {
     super.initState();
     getFreshData();
     _fetchListItems();
+    this.getSWData();
   }
 
   @override
@@ -139,7 +184,7 @@ class _TransactionViewScreenState extends State<TransactionViewScreen> {
             child: Image.asset(
               'assets/Illustration/Untitled-1.png',
               width: 500.0,
-              height: 500.0,
+              height: 300.0,
               fit: BoxFit.fill,
             ),
           ),
@@ -147,126 +192,81 @@ class _TransactionViewScreenState extends State<TransactionViewScreen> {
             child: Column(
               children: [
                 CustomAppBar(
-                    title: 'View Transaction', color: ColorResources.COLOR_WHITE),
+                    title: 'Merchant Settings', color: ColorResources.COLOR_WHITE),
                 Expanded(
                   child: Column(
                     children: [
-                      SizedBox(height: 20),
-                      Container(
-                        margin: EdgeInsets.only(left: 30, right: 30),
-                        height: 100,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                },
-                                child: Container(
-                                  width: 90,
-                                  height: 120,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: widget.type == 'DEBIT' ? Colors.redAccent : Colors.green,
-                                    borderRadius: BorderRadius.circular(7),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        spreadRadius: 1,
-                                        blurRadius: 10,
-                                        offset: Offset(0, 3),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text('${widget.type}',
-                                          style: TextStyle( fontSize: 14.0,
-                                              color: Colors.white)),
-                                      SizedBox(height: 10.0,),
-                                      Text('₦ ${widget.amount}',
-                                          style: TextStyle( fontSize: 20.0,
-                                              color: Colors.white)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                       SizedBox(
-                        height: 15.0,
+                        height: 25.0,
                       ),
                       Container(
                         child: Padding(
-                          padding: const EdgeInsets.all(30.0),
+                          padding: const EdgeInsets.all(20.0),
                           child: Row(
                             children: [
                               Expanded(
                                 child: Container(
                                   child: Column(
-                                   children: [
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Text('Transaction Details', style: TextStyle(fontSize: 16.0, color: Colors.black),),
-                                       ],
-                                     ),
-                                     SizedBox(
-                                       height: 25.0,
-                                     ),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Text('Description', style: TextStyle(fontSize: 16.0, color: Colors.black),),
-                                       ],
-                                     ),
-                                     SizedBox(height: 7.0,),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Expanded(child: Text('${widget.description}', style: TextStyle(fontSize: 16.0, color: Colors.black),)),
-                                       ],
-                                     ),
-                                     Divider(
-                                         color: Colors.black,
-                                       height: 5.0,
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Expanded(child: Text('Narration', style: TextStyle(fontSize: 16.0, color: Colors.black),)),
-                                       ],
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Divider(
-                                       color: Colors.black,
-                                       height: 5.0,
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Container(child: Text('Transaction Time', style: TextStyle(fontSize: 16.0, color: Colors.black),)),
-                                         Text('${outputFormat.format(DateTime.parse(DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(widget.time).toString()))}', style: TextStyle(fontSize: 16.0, color: Colors.black),),
-                                       ],
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Divider(
-                                       color: Colors.black,
-                                       height: 5.0,
-                                     ),
-                                   ],
+                                    children: [
+                                      ListTile(
+                                          onTap: () {
+                                          },
+                                          title: Padding(
+                                            padding: const EdgeInsets.all(2.0),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text('Request Merchant ID' , style: TextStyle(fontSize: 18.0)),
+                                                Icon(Icons.arrow_forward_ios_sharp, color: Colors.black, size: 20.0,),
+                                              ],
+                                            ),
+                                          )
+                                      ),
+                                      Divider(
+                                        color: Colors.black,
+                                        height: 5.0,
+                                      ),
+
+                                      ListTile(
+                                          onTap: () {
+                                          },
+                                          title: Padding(
+                                            padding: const EdgeInsets.all(2.0),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text('Update Address' , style: TextStyle(fontSize: 18.0)),
+                                                Icon(Icons.arrow_forward_ios_sharp, color: Colors.black, size: 20.0,),
+                                              ],
+                                            ),
+                                          )
+                                      ),
+                                      Divider(
+                                        color: Colors.black,
+                                        height: 5.0,
+                                      ),
+
+                                      ListTile(
+                                          onTap: () {
+                                            //MerchantViewScreen1
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => MerchantPercentScreen1()));
+                                          },
+                                          title: Padding(
+                                            padding: const EdgeInsets.all(2.0),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text('Set Reward {%)' , style: TextStyle(fontSize: 18.0)),
+                                                Icon(Icons.arrow_forward_ios_sharp, color: Colors.black, size: 20.0,),
+                                              ],
+                                            ),
+                                          )
+                                      ),
+                                      Divider(
+                                        color: Colors.black,
+                                        height: 5.0,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -276,17 +276,6 @@ class _TransactionViewScreenState extends State<TransactionViewScreen> {
                       ),
                       SizedBox(
                         height: 80.0,
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 30, right: 30),
-                        color: Colors.deepPurple,
-                        child: FlatButton(
-                          onPressed: (){
-                            Navigator.of(context).pop();
-                          },
-                          color: Colors.deepPurple,
-                          child: Text('Close', style: TextStyle(color: Colors.white),),
-                        )
                       ),
                     ],
                   ),

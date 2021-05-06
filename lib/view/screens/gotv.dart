@@ -86,11 +86,11 @@ class _GOTVState extends State<GOTV> {
       _items = [
         {
           'value': '$walletMainSlug',
-          'label': '$walletMainSlug  $walletMain',
+          'label': '$walletMainSlug  ₦$walletMain',
         },
         {
           'value': '$extraWalletSlug',
-          'label': '$extraWalletSlug  $extraWallet',
+          'label': '$extraWalletSlug  ₦$extraWallet',
         },
       ];
     });
@@ -109,7 +109,7 @@ class _GOTVState extends State<GOTV> {
 
   @override
   Widget build(BuildContext context) {
-    return SendMoneyWidget(title: '${widget.product} Subscription', child: Column(
+    return SendMoneyWidget(title: '${widget.product}', child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(height: 100.0,),
@@ -125,12 +125,18 @@ class _GOTVState extends State<GOTV> {
                   enabled: false,
                   onChanged:(value) async {
                     setState(() {
-                      account = value;
+                      amount = value;
                     });
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Amount",
+                    labelText: "Enter Amount",
+                    labelStyle: TextStyle(color: Colors.deepPurple),
                     errorText: _validate == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -156,7 +162,13 @@ class _GOTVState extends State<GOTV> {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter Account",
+                    labelText: "Enter Account",
+                    labelStyle: TextStyle(color: Colors.deepPurple),
                     errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
                   ),
                 ),
               ),
@@ -174,7 +186,15 @@ class _GOTVState extends State<GOTV> {
                   type: SelectFormFieldType.dropdown, // or can be dialog
                   initialValue: 'null',
                   icon: Icon(Icons.account_balance_wallet),
-                  labelText: 'Wallet',
+                  decoration: InputDecoration(
+                    labelText: 'Select Wallet',
+                    hintText: 'Select Wallet',
+                    labelStyle: TextStyle(color: Colors.deepPurple),
+                    focusedBorder:OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
                   items: _items,
                   onChanged:(value) async {
                     setState(() {
@@ -210,7 +230,7 @@ class _GOTVState extends State<GOTV> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '${widget.product}',
+                      '${widget.product != null ? widget.product : ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -231,7 +251,7 @@ class _GOTVState extends State<GOTV> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$amount',
+                      '${amount != null ? '₦$amount': '₦0'}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -252,7 +272,7 @@ class _GOTVState extends State<GOTV> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$account',
+                      '${ account != null ? account:''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -273,7 +293,7 @@ class _GOTVState extends State<GOTV> {
                   Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Text(
-                      '$wallet',
+                      '${wallet != null ? wallet: ''}',
                       style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
                     ),
                   ),
@@ -288,27 +308,24 @@ class _GOTVState extends State<GOTV> {
           child: CustomButton(btnTxt: 'Initiate', onTap: () async {
             var url = "https://euzzitstaging.com.ng/api/v1/user/transfer/generate_transaction_ref";
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
-                overlayColor: Color(0x99E8EAF6));
-    if(_amountController.text.isEmpty){
-    _amountController.text.isEmpty ? _validate = true : _validate = false;
 
-    Toast.show('Amount cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-    } else if ( _customernameController.text.isEmpty) {
-    _customernameController.text.isEmpty ? _validated = true : _validate = false;
-    Toast.show('Customer name cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-    } else {
-      await prefs.setInt('GOTVAmount', amount);
-      await prefs.setInt('gotvService_id', 21);
-      await prefs.setString('wallet', wallet);
-      await prefs.setInt('gotvaccount', account);
+             if ( _accountController.text.isEmpty) {
+              _accountController.text.isEmpty ? _validated = true : _validate = false;
+              Toast.show('Account Number cannot be empty', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            } else if(wallet == null){
+              Toast.show('Select a wallet', context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
+            } else  {
+               await prefs.setInt('GOTVAmount', amount);
+               await prefs.setInt('gotvService_id', 21);
+               await prefs.setString('wallet', wallet);
+               await prefs.setString('gotvaccount', account);
 
-      Loader.hide();
-      Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => GOTVPINScreen()));
-    }
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => GOTVPINScreen()));
+            }
           }),
         ),
+
       ],
     ));
   }

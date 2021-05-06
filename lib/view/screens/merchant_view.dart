@@ -29,13 +29,14 @@ class _MerchantViewScreen1State extends State<MerchantViewScreen1> {
   var amount = '0';
   var accountNumber;
   var bank_id;
-  var  _myActivityResult = '';
+  var _myActivityResult = '';
   var wallet;
+  var _validated;
+  var _validate;
   List<Map<String, dynamic>> _items = [];
 
-
   final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _merchantIDController = TextEditingController();
   String _mySelection = 'Select Bank';
 
   final String url = "https://euzzitstaging.com.ng/api/v1/banks";
@@ -44,7 +45,7 @@ class _MerchantViewScreen1State extends State<MerchantViewScreen1> {
 
   Future<String> getSWData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token =  prefs.getString('accessToken');
+    var token = prefs.getString('accessToken');
     final http.Response response = await http.get(
       url,
       headers: <String, String>{
@@ -61,15 +62,14 @@ class _MerchantViewScreen1State extends State<MerchantViewScreen1> {
       var extraWallet = prefs.getString('extraWalletBalance');
       var extraWalletSlug = prefs.getString('extraWalletSlug');
 
-
       _items = [
         {
           'value': '$walletMainSlug',
-          'label': '$walletMainSlug  $walletMain',
+          'label': '$walletMainSlug  ₦$walletMain',
         },
         {
           'value': '$extraWalletSlug',
-          'label': '$extraWalletSlug  $extraWallet',
+          'label': '$extraWalletSlug  ₦$extraWallet',
         },
       ];
     });
@@ -83,199 +83,273 @@ class _MerchantViewScreen1State extends State<MerchantViewScreen1> {
   void initState() {
     super.initState();
     this.getSWData();
-
   }
-
-
 
   @override
   Widget build(BuildContext context) {
-    return SendMoneyWidget(title: 'Send Money', child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(height: 60.0,),
-        Container(
-          child: Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  controller: _phoneController,
-                  onChanged:(value) async {
-                    setState(() {
-                      accountNumber = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Enter Merchant ID",
+    return SendMoneyWidget(
+        title: 'Send Money',
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 60.0,
+            ),
+            Container(
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: TextField(
+                      keyboardType: TextInputType.number,
+                      controller: _merchantIDController,
+                      onChanged: (value) async {
+                        setState(() {
+                          accountNumber = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Enter Merchant ID",
+                        labelText: "Enter Merchant ID",
+                        labelStyle: TextStyle(color: Colors.deepPurple),
+                        errorText:
+                            _validated == true ? 'Value Can\'t Be Empty' : null,
+                        focusedBorder:OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
 //https://euzzitstaging.com.ng/api/v1/auth/register
-            ],
-          ),
-        ),
-        SizedBox(height: 20.0,),
-        Container(
-          child: Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  controller: _amountController,
-                  onChanged:(value) async {
-                    setState(() {
-                      amount = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Enter Amount",
-                  ),
-                ),
+                ],
               ),
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            Container(
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: TextField(
+                      keyboardType: TextInputType.number,
+                      controller: _amountController,
+                      onChanged: (value) async {
+                        setState(() {
+                          amount = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Enter Amount",
+                        labelText: 'Enter Amount',
+                        labelStyle: TextStyle(color: Colors.deepPurple),
+                        errorText: _validate == true ? 'Value Can\'t Be Empty' : null,
+                        focusedBorder:OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                      ),
+                    ),
+                  ),
 //https://euzzitstaging.com.ng/api/v1/auth/register
-            ],
-          ),
-        ),
-        SizedBox(height: 30.0,),
-        Container(
-          child: Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: SelectFormField(
-                  type: SelectFormFieldType.dropdown, // or can be dialog
-                  initialValue: 'null',
-                  icon: Icon(Icons.account_balance_wallet),
-                  labelText: 'Wallet',
-                  items: _items,
-                  onChanged:(value) async {
-                    setState(() {
-                      wallet = value;
-                    });
-                  },
-                  onSaved: (val) => {
-
-                  },
-                ),
+                ],
               ),
+            ),
+            SizedBox(
+              height: 30.0,
+            ),
+            Container(
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: SelectFormField(
+                      type: SelectFormFieldType.dropdown, // or can be dialog
+                      initialValue: 'null',
+                      icon: Icon(Icons.account_balance_wallet),
+                      decoration: InputDecoration(
+                        hintText: 'Select Wallet',
+                        labelText: 'Select Wallet',
+                        labelStyle: TextStyle(color: Colors.deepPurple),
+                        focusedBorder:OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                      ),
+                      items: _items,
+                      onChanged: (value) async {
+                        setState(() {
+                          wallet = value;
+                        });
+                      },
+                      onSaved: (val) => {},
+                    ),
+                  ),
 //https://euzzitstaging.com.ng/api/v1/auth/register
-            ],
-          ),
-        ),
-        SizedBox(height: 20.0,),
-
-
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 30),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 30),
+              child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 35.0),
-                    child: Text(
-                      'Amount:',
-                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 35.0),
+                        child: Text(
+                          'Amount:',
+                          style: montserratSemiBold.copyWith(
+                              fontSize: Dimensions.FONT_SIZE_SMALL,
+                              color: ColorResources.COLOR_DIM_GRAY),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 35.0),
+                        child: Text(
+                          '${amount != null ? '₦$amount' : '₦0'}',
+                          style: montserratSemiBold.copyWith(
+                              fontSize: Dimensions.FONT_SIZE_SMALL,
+                              color: ColorResources.COLOR_DIM_GRAY),
+                        ),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 35.0),
-                    child: Text(
-                      '$amount',
-                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
-                    ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 35.0),
+                        child: Text(
+                          'Transaction Type:',
+                          style: montserratSemiBold.copyWith(
+                              fontSize: Dimensions.FONT_SIZE_SMALL,
+                              color: ColorResources.COLOR_DIM_GRAY),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 35.0),
+                        child: Text(
+                          'Payment',
+                          style: montserratSemiBold.copyWith(
+                              fontSize: Dimensions.FONT_SIZE_SMALL,
+                              color: ColorResources.COLOR_DIM_GRAY),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 35.0),
+                        child: Text(
+                          'Wallet:',
+                          style: montserratSemiBold.copyWith(
+                              fontSize: Dimensions.FONT_SIZE_SMALL,
+                              color: ColorResources.COLOR_DIM_GRAY),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 35.0),
+                        child: Text(
+                          '${wallet != null ? wallet : ''}',
+                          style: montserratSemiBold.copyWith(
+                              fontSize: Dimensions.FONT_SIZE_SMALL,
+                              color: ColorResources.COLOR_DIM_GRAY),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 35.0),
+                        child: Text(
+                          'Merchant ID:',
+                          style: montserratSemiBold.copyWith(
+                              fontSize: Dimensions.FONT_SIZE_SMALL,
+                              color: ColorResources.COLOR_DIM_GRAY),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 35.0),
+                        child: Text(
+                          '${accountNumber != null ? accountNumber : ''}',
+                          style: montserratSemiBold.copyWith(
+                              fontSize: Dimensions.FONT_SIZE_SMALL,
+                              color: ColorResources.COLOR_DIM_GRAY),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              SizedBox(height: 10.0,),
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Dimensions.PADDING_SIZE_LARGE),
+              child: CustomButton(
+                  btnTxt: 'Initiate',
+                  onTap: () async {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 35.0),
-                    child: Text(
-                      'Transaction Type:',
-                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 35.0),
-                    child: Text(
-                      'Payment',
-                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10.0,),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 35.0),
-                    child: Text(
-                      'Wallet:',
-                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 35.0),
-                    child: Text(
-                      '$wallet',
-                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10.0,),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 35.0),
-                    child: Text(
-                      'Merchant ID:',
-                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 35.0),
-                    child: Text(
-                      '$accountNumber',
-                      style: montserratSemiBold.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL, color: ColorResources.COLOR_DIM_GRAY),
-                    ),
-                  ),
-                ],
-              ),
-
-            ],
-          ),
-        ),
-        SizedBox(height: 20.0,),
-
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
-          child: CustomButton(btnTxt: 'Initiate', onTap: () async {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
-                overlayColor: Color(0x99E8EAF6));
-            await prefs.setString('merchant_id', accountNumber );
-            await prefs.setString('merchant_amount', amount );
-            await prefs.setString('merchant_Wallet', wallet );
-            Loader.hide();
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => MerchantPaymentScreen()));
-
-
-          }),
-        ),
-      ],
-    ));
+                    if (_merchantIDController.text.isEmpty) {
+                      setState(() {
+                        _merchantIDController.text.isEmpty
+                            ? _validated = true
+                            : _validated = false;
+                      });
+                      Toast.show('Merchant ID cannot be empty', context,
+                          duration: Toast.LENGTH_SHORT,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: Colors.red);
+                    } else if (_amountController.text.isEmpty) {
+                      setState(() {
+                        _amountController.text.isEmpty
+                            ? _validate = true
+                            : _validate = false;
+                      });
+                      Toast.show('Amount cannot be empty', context,
+                          duration: Toast.LENGTH_SHORT,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: Colors.red);
+                    } else if (wallet == null) {
+                      Toast.show('Select a wallet', context,
+                          duration: Toast.LENGTH_SHORT,
+                          gravity: Toast.BOTTOM,
+                          backgroundColor: Colors.red);
+                    } else {
+                      await prefs.setString('merchant_id', accountNumber);
+                      await prefs.setString('merchant_amount', amount);
+                      await prefs.setString('merchant_Wallet', wallet);
+                      Loader.hide();
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => MerchantPaymentScreen()));
+                    }
+                  }),
+            ),
+          ],
+        ));
   }
 }

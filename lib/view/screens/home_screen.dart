@@ -6,6 +6,7 @@ import 'package:euzzit/view/screens/databundle.dart';
 import 'package:euzzit/view/screens/education.dart';
 import 'package:euzzit/view/screens/electricity.dart';
 import 'package:euzzit/view/screens/merchants.dart';
+import 'package:euzzit/view/screens/notification.dart';
 import 'package:euzzit/view/screens/send_fund.dart';
 import 'package:euzzit/view/screens/withdraw.dart';
 import 'package:flutter/material.dart';
@@ -156,28 +157,10 @@ class _euzzitHomeScreenState extends State<euzzitHomeScreen> {
                       Stack(
                         overflow: Overflow.visible,
                         children: [
-                          Icon(Icons.notifications, size: 30, color: ColorResources.COLOR_WHITE),
-                          Positioned(
-                            right: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: ColorResources.COLOR_DARK_ORCHID.withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 10,
-                                    offset: Offset(0, 1), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                              child: CircleAvatar(
-                                radius: 8,
-                                backgroundColor: ColorResources.COLOR_WHITE,
-                                child: Text(Strings.TWO, style: TextStyle(fontSize: 8)),
-                              ),
-                            ),
-                          )
+                          GestureDetector(onTap: (){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => NotificationScreen()));
+                          },child: Icon(Icons.notifications, size: 30, color: ColorResources.COLOR_WHITE)),
+
                         ],
                       ),
                     ],

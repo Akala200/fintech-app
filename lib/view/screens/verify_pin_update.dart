@@ -1,26 +1,37 @@
 import 'dart:async';
-import 'package:euzzit/view/screens/setting_screen.dart';
-import 'package:euzzit/view/screens/settings_screen.dart';
+import 'dart:ffi';
+
+import 'package:euzzit/view/screens/saving_account_screen.dart';
+import 'package:euzzit/view/screens/update_account.dart';
+import 'package:euzzit/view/screens/upgrade_pin.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:euzzit/utility/colorResources.dart';
 import 'package:euzzit/utility/dimensions.dart';
+import 'package:euzzit/utility/strings.dart';
 import 'package:euzzit/utility/style.dart';
+import 'package:euzzit/view/screens/step/step_three_screen.dart';
 import 'package:euzzit/view/widgets/button/custom_button.dart';
+import 'package:euzzit/view/widgets/custom_app_bar.dart';
+import 'package:euzzit/view/screens/startup_Screen.dart';
+import 'package:euzzit/view/screens/step/step_one_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:loading/loading.dart';
+import 'package:loading/indicator/ball_pulse_indicator.dart';
 import 'package:toast/toast.dart';
 
 
-class PinUpdateScreen extends StatefulWidget {
+class VerifyPinUpdateScreen extends StatefulWidget {
   @override
-  _PinUpdateScreenState createState() => _PinUpdateScreenState();
+  _VerifyPinUpdateScreenState createState() => _VerifyPinUpdateScreenState();
 }
 
-class _PinUpdateScreenState extends State<PinUpdateScreen> {
+class _VerifyPinUpdateScreenState extends State<VerifyPinUpdateScreen> {
   String currentText = '';
   var onTapRecognizer;
   var code;
@@ -82,7 +93,7 @@ class _PinUpdateScreenState extends State<PinUpdateScreen> {
               SizedBox(height: 150.0,),
               Center(
                 child: Text(
-                  'Update Pin',
+                  'Enter old pin',
                   style: poppinsRegular.copyWith(
                     fontSize: 17,
                   ),
@@ -96,7 +107,7 @@ class _PinUpdateScreenState extends State<PinUpdateScreen> {
                 padding: EdgeInsets.only(left: 30, right: 20),
                 alignment: Alignment.center,
                 child: Text(
-                  'Input new pin',
+                  'Input old pin before you can update your pin',
                   textAlign: TextAlign.center,
                   style: montserratRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
                 ),
@@ -173,46 +184,13 @@ class _PinUpdateScreenState extends State<PinUpdateScreen> {
                   right: Dimensions.MARGIN_SIZE_DEFAULT,
                 ),
                 child: CustomButton(
-                  btnTxt: 'Update Pin',
+                  btnTxt: 'Authorize',
                   onTap: () async {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-
-                    var url = "https://euzzitstaging.com.ng/api/v1/user/update_transaction_pin";
-
-                    Loader.show(context,progressIndicator: CircularProgressIndicator(), themeData: Theme.of(context).copyWith(accentColor: Colors.deepPurple),
-                        overlayColor: Color(0x99E8EAF6));
-                    var token =  prefs.getString('accessToken');
-                    var oldCode =  prefs.getString('Oldcode');
-
-                     final http.Response response = await http.post(
-                        url,
-                        headers: <String, String>{
-                          'Content-Type': 'application/json; charset=UTF-8',
-                          'Authorization': 'Bearer $token',
-
-                        },
-                        body: jsonEncode({
-                          'transaction_pin': code,
-                          'transaction_pin_confirmation': code,
-                          'old_transaction_pin': oldCode
-                        }),
-                      );
-                      if (response.statusCode == 200) {
-                        Loader.hide();
-                        var st = jsonDecode(response.body);
-                        print(st);
-                        var message = st["message"];
-                        Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.green);
+                    await prefs.setString('Oldcode', code);
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => SettingScreen()));
-                      } else {
-                        Loader.hide();
-                        var st = jsonDecode(response.body);
-                        var message = st["message"];
-                        print(response.body);
-                        Toast.show(message, context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM, backgroundColor: Colors.red);
-                      }
+                            builder: (context) => PinUpdateScreen()));
+
 
                   },
                 ),

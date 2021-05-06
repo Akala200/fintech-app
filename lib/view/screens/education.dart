@@ -61,70 +61,82 @@ class _EducationScreenState extends State<EducationScreen> {
 
     return Scaffold(
       backgroundColor: ColorResources.COLOR_REGISTRATION_BACKGROUND,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                CustomAppBar(title: 'Education', color: Colors.deepPurple),
-            SizedBox(height: 30.0,),
-            Container(
-              width: double.infinity,
-              height: 100.0,
-              child:   GestureDetector(
-                onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => JambScreen1()));
-                },
-                child: Card(
-                  color: Colors.white,
-
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const ListTile(
-                        leading: CircleAvatar(
-                      backgroundImage: AssetImage('assets/Icon/charity.png'), // no matter how big it is, it won't overflow
-                ),
-                        title: Text('UTME (JAMB)', style: TextStyle(color: Colors.deepPurple),),
-                        subtitle: Text('PIN', style: TextStyle(color: Colors.deepPurple),),
-                      ),
-                    ],
-                  ),
-                ),
-              ), ),
-                SizedBox(height: 10.0,),
-
-                Container(
-                  width: double.infinity,
-                  height: 100.0,
-                  child:   GestureDetector(
-                    onTap: (){
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => WAECScreen1()));
-                    },
-                    child: Card(
-                      color: Colors.white,
-
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          const ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: AssetImage('assets/Icon/shopping.png'), // no matter how big it is, it won't overflow
-                            ),
-                            title: Text('WAEC', style: TextStyle(color: Colors.deepPurple),),
-                            subtitle: Text('PIN', style: TextStyle(color: Colors.deepPurple),),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ), )
-              ],
-            )
-
+      body: Stack(
+        children: [
+          Container(
+            child: Image.asset(
+              'assets/Illustration/Untitled-1.png',
+              width: 500.0,
+              height: 340.0,
+              fit: BoxFit.fill,
+            ),
           ),
-        ),
-      ),
+          SingleChildScrollView(
+            child: SafeArea(
+              child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      CustomAppBar(title: 'Education', color: Colors.white),
+                      SizedBox(height: 50.0,),
+                      Container(
+                        width: double.infinity,
+                        height: 100.0,
+                        child:   GestureDetector(
+                          onTap: (){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => JambScreen1()));
+                          },
+                          child: Card(
+                            color: Colors.white,
+
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                const ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage: AssetImage('assets/Icon/charity.png'), // no matter how big it is, it won't overflow
+                                  ),
+                                  title: Text('UTME (JAMB)', style: TextStyle(color: Colors.deepPurple),),
+                                  subtitle: Text('PIN', style: TextStyle(color: Colors.deepPurple),),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ), ),
+                      SizedBox(height: 10.0,),
+
+                      Container(
+                        width: double.infinity,
+                        height: 100.0,
+                        child:   GestureDetector(
+                          onTap: (){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => WAECScreen1()));
+                          },
+                          child: Card(
+                            color: Colors.white,
+
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                const ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage: AssetImage('assets/Icon/shopping.png'), // no matter how big it is, it won't overflow
+                                  ),
+                                  title: Text('WAEC', style: TextStyle(color: Colors.deepPurple),),
+                                  subtitle: Text('PIN', style: TextStyle(color: Colors.deepPurple),),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ), )
+                    ],
+                  )
+
+              ),
+            ),
+          ),
+        ],
+      )
     );
   }
 }

@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:euzzit/view/screens/merchat_setting.dart';
+import 'package:euzzit/view/screens/update_account.dart';
+import 'package:euzzit/view/screens/view_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:euzzit/provider/goals_provider.dart';
 import 'package:euzzit/utility/dimensions.dart';
@@ -12,18 +15,12 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 
-class TransactionViewScreen extends StatefulWidget {
-  final  String amount;
-  final String description;
-  final String type;
-  final String time;
-
-  TransactionViewScreen({Key key, @required this.amount, @required this.description, @required this.time, @required this.type }) : super(key: key);
+class MerchantDashboardScreen extends StatefulWidget {
   @override
-  _TransactionViewScreenState createState() => _TransactionViewScreenState();
+  _MerchantDashboardScreenState createState() => _MerchantDashboardScreenState();
 }
 
-class _TransactionViewScreenState extends State<TransactionViewScreen> {
+class _MerchantDashboardScreenState extends State<MerchantDashboardScreen> {
   int bannerIndex = 0;
   var balance;
   var balanceExtra;
@@ -147,11 +144,13 @@ class _TransactionViewScreenState extends State<TransactionViewScreen> {
             child: Column(
               children: [
                 CustomAppBar(
-                    title: 'View Transaction', color: ColorResources.COLOR_WHITE),
+                    title: 'Merchant Dashboard', color: Colors.white),
                 Expanded(
-                  child: Column(
+                  child: ListView(
                     children: [
-                      SizedBox(height: 20),
+                      SizedBox(
+                        height: 20.0,
+                      ),
                       Container(
                         margin: EdgeInsets.only(left: 30, right: 30),
                         height: 100,
@@ -164,9 +163,8 @@ class _TransactionViewScreenState extends State<TransactionViewScreen> {
                                 child: Container(
                                   width: 90,
                                   height: 120,
-                                  alignment: Alignment.center,
                                   decoration: BoxDecoration(
-                                    color: widget.type == 'DEBIT' ? Colors.redAccent : Colors.green,
+                                    color: Colors.purple,
                                     borderRadius: BorderRadius.circular(7),
                                     boxShadow: [
                                       BoxShadow(
@@ -177,16 +175,35 @@ class _TransactionViewScreenState extends State<TransactionViewScreen> {
                                       ),
                                     ],
                                   ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  child: Row(
                                     children: [
-                                      Text('${widget.type}',
-                                          style: TextStyle( fontSize: 14.0,
-                                              color: Colors.white)),
-                                      SizedBox(height: 10.0,),
-                                      Text('₦ ${widget.amount}',
-                                          style: TextStyle( fontSize: 20.0,
-                                              color: Colors.white)),
+                                      Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Icon(Icons.account_balance_wallet, color: Colors.white, size: 40.0,),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Container(
+                                                width: 257.0,
+                                                child: Text("Yesterday's Transaction",
+                                                    style: TextStyle( fontSize: 16.0,
+                                                        color: Colors.white)),
+                                              ),
+                                            ),
+                                            SizedBox(height: 5.0,),
+                                            Container(
+                                              width: 257.0,
+                                              child: Text('₦500,000.00',
+                                                  style: TextStyle( fontSize: 20.0,
+                                                      color: Colors.white)),
+                                            )
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -196,104 +213,108 @@ class _TransactionViewScreenState extends State<TransactionViewScreen> {
                         ),
                       ),
                       SizedBox(
-                        height: 15.0,
-                      ),
-                      Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(30.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Column(
-                                   children: [
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Text('Transaction Details', style: TextStyle(fontSize: 16.0, color: Colors.black),),
-                                       ],
-                                     ),
-                                     SizedBox(
-                                       height: 25.0,
-                                     ),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Text('Description', style: TextStyle(fontSize: 16.0, color: Colors.black),),
-                                       ],
-                                     ),
-                                     SizedBox(height: 7.0,),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Expanded(child: Text('${widget.description}', style: TextStyle(fontSize: 16.0, color: Colors.black),)),
-                                       ],
-                                     ),
-                                     Divider(
-                                         color: Colors.black,
-                                       height: 5.0,
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Expanded(child: Text('Narration', style: TextStyle(fontSize: 16.0, color: Colors.black),)),
-                                       ],
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Divider(
-                                       color: Colors.black,
-                                       height: 5.0,
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                       children: [
-                                         Container(child: Text('Transaction Time', style: TextStyle(fontSize: 16.0, color: Colors.black),)),
-                                         Text('${outputFormat.format(DateTime.parse(DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(widget.time).toString()))}', style: TextStyle(fontSize: 16.0, color: Colors.black),),
-                                       ],
-                                     ),
-                                     SizedBox(
-                                       height: 10.0,
-                                     ),
-                                     Divider(
-                                       color: Colors.black,
-                                       height: 5.0,
-                                     ),
-                                   ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 80.0,
+                        height: 20.0,
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 30, right: 30),
-                        color: Colors.deepPurple,
-                        child: FlatButton(
-                          onPressed: (){
-                            Navigator.of(context).pop();
-                          },
-                          color: Colors.deepPurple,
-                          child: Text('Close', style: TextStyle(color: Colors.white),),
-                        )
+                        height: 100,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                },
+                                child: Container(
+                                  width: 90,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepPurple.shade900,
+                                    borderRadius: BorderRadius.circular(7),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 1,
+                                        blurRadius: 10,
+                                        offset: Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Icon(Icons.account_balance_wallet, color: Colors.white, size: 40.0,),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              width: 257.0,
+                                              child: Text("Today's Transaction",
+                                                  style: TextStyle( fontSize: 16.0,
+                                                      color: Colors.white)),
+                                            ),
+                                            SizedBox(height: 5.0,),
+                                            Container(
+                                              width: 257.0,
+                                              child: Text('₦500,000.00',
+                                                  style: TextStyle( fontSize: 16.0,
+                                                      color: Colors.white)),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: 75),
+
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          child: ListTile(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => MerchantSettingScreen()));
+                            },
+                            title: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('Merchant Settings',
+                                      style: poppinsSemiBold.copyWith(
+                                          color: ColorResources.COLOR_DIM_GRAY)),
+                                  Icon(Icons.arrow_forward_ios_sharp, size: 20.0,
+                                      color: Colors.black),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+
+                      Divider(
+                          height: 5, color: Colors.black),
+
+                      SizedBox(
+                        height: 40.0,
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),
+
         ],
       ),
     );

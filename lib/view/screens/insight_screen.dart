@@ -143,8 +143,7 @@ class _InsightScreenState extends State<InsightScreen> {
                                                                   style: poppinsSemiBold.copyWith(
                                                                       fontSize: Dimensions
                                                                           .FONT_SIZE_SMALL,
-                                                                      color: ColorResources
-                                                                          .COLOR_ROYAL_BLUE),
+                                                                      color: snapshot.data[index]["type"] == 'DEBIT' ? Colors.redAccent : Colors.green),
                                                                 ),
                                                               ],
                                                             ),
@@ -164,7 +163,7 @@ class _InsightScreenState extends State<InsightScreen> {
                                                             Text(
                                                               '₦ ${snapshot.data[index]
                                                               ["amount"]}',
-                                                              style: TextStyle(fontSize: 17.0, color: Colors.red),
+                                                              style: TextStyle(fontSize: 17.0, color: snapshot.data[index]["type"] == 'DEBIT' ? Colors.redAccent : Colors.green),
                                                             ),
 
                                                           ],

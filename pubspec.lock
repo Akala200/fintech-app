@@ -120,13 +120,41 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.6"
-  contact_picker:
+  connectivity_plus:
     dependency: "direct main"
     description:
-      name: contact_picker
+      name: connectivity_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.7.1"
+  connectivity_plus_linux:
+    dependency: transitive
+    description:
+      name: connectivity_plus_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
+  connectivity_plus_macos:
+    dependency: transitive
+    description:
+      name: connectivity_plus_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
+  connectivity_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: connectivity_plus_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
+  connectivity_plus_web:
+    dependency: transitive
+    description:
+      name: connectivity_plus_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
   convert:
     dependency: transitive
     description:
@@ -169,6 +197,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.4"
+  dbus:
+    dependency: transitive
+    description:
+      name: dbus
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   dio:
     dependency: "direct main"
     description:
@@ -310,6 +345,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.0"
+  isw_mobile_sdk:
+    dependency: "direct main"
+    description:
+      name: isw_mobile_sdk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0-5.6"
   loading:
     dependency: "direct main"
     description:

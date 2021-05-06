@@ -91,7 +91,7 @@ class _UpgradeSettingScreen1State extends State<UpgradeSettingScreen1> {
                   width: MediaQuery.of(context).size.width,
                   child: Stack(children: [
                     Padding(
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: IconButton(
                         icon: Icon(Icons.chevron_left, size: 30, color: Colors.deepPurple),
                         onPressed: () => Navigator.of(context).pop(),
@@ -126,8 +126,17 @@ class _UpgradeSettingScreen1State extends State<UpgradeSettingScreen1> {
                               type: SelectFormFieldType.dropdown, // or can be dialog
                               initialValue: 'null',
                               icon: Icon(Icons.account_balance_wallet),
-                              labelText: 'Choose Wallet',
                               items: _items,
+                              decoration: InputDecoration(
+                                hintText: "Choose Wallet",
+                                labelText: "Choose Wallet",
+                                labelStyle: TextStyle(color: Colors.deepPurple),
+                                errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                                focusedBorder:OutlineInputBorder(
+                                  borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                                  borderRadius: BorderRadius.circular(25.0),
+                                ),
+                              ),
                               onChanged: (value) async {
                                 setState(() {
                                   wallet = value;
@@ -158,7 +167,13 @@ class _UpgradeSettingScreen1State extends State<UpgradeSettingScreen1> {
                               },
                               decoration: InputDecoration(
                                 hintText: "Enter Premium Invite ID",
+                                labelText: "Enter Premium Invite ID",
+                                labelStyle: TextStyle(color: Colors.deepPurple),
                                 errorText: _validated == true ? 'Value Can\'t Be Empty' : null,
+                                  focusedBorder:OutlineInputBorder(
+                                    borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
+                                    borderRadius: BorderRadius.circular(25.0),
+                                  ),
                                 helperText: 'Leave Blank if you don not have any premium invite ID'
 
                               ),
@@ -195,7 +210,7 @@ class _UpgradeSettingScreen1State extends State<UpgradeSettingScreen1> {
                                 title: Text(
                                   'Proceed with Account Upgrade?',
                                   style: TextStyle(
-                                      color: Colors.deepPurple, fontSize: 20.0),
+                                      color: Colors.white, fontSize: 20.0,),
                                 ),
                                 content: Text(
                                     'The sum of ₦180,00.00 will be deducted from your $wallet account. Do you want to proceed with this action?'),
@@ -220,6 +235,7 @@ class _UpgradeSettingScreen1State extends State<UpgradeSettingScreen1> {
                                   headers: <String, String>{
                                     'Content-Type': 'application/json; charset=UTF-8',
                                     'Authorization': 'Bearer $token',
+
                                   },
                                   body: jsonEncode({
                                     'wallet': wallet,
