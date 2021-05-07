@@ -127,7 +127,7 @@ class _InsightScreenState extends State<InsightScreen> {
                                                   flex: 5,
                                                   child: GestureDetector(
                                                     onTap: (){
-                                                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => TransactionViewScreen(amount: snapshot.data[index]["amount"], description: snapshot.data[index]["description"], time:  snapshot.data[index]["created_at"], type: snapshot.data[index]["type"],)));
+                                                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => TransactionViewScreen(amount: snapshot.data[index]["amount"].toString(), description: snapshot.data[index]["description"], time:  snapshot.data[index]["created_at"], type: snapshot.data[index]["type"],)));
                                                     },
                                                     child: Column(
                                                       children: [

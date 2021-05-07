@@ -57,7 +57,7 @@ dependencies:
   intl: 0.16.0
   confirm_dialog: 0.1.0
   connectivity_plus: 0.7.1
-  isw_mobile_sdk: ^1.0.0-5.6
+
 
 
 

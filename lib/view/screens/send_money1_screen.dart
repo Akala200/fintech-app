@@ -18,7 +18,6 @@ import 'package:loading/indicator/ball_pulse_indicator.dart';
 import 'package:toast/toast.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:isw_mobile_sdk/isw_mobile_sdk.dart';
 import 'dart:convert';
 
 class SendMoneyScreen1 extends StatefulWidget {
@@ -45,72 +44,10 @@ class _SendMoneyScreen1State extends State<SendMoneyScreen1> {
 //dstvaccount  merchantCode
   }
 
-  Future<void> initSdk() async {
-    // messages may fail, so we use a try/catch PlatformException. merchantCode
-    try {
-      String merchantId = "IKIA5BA5374FBB9EED86752E118B272C5A538C4108C6",
-          merchantKey = "1EEB5A9C59231D858F6A6B9D1FB34F9094C5BBAB",
-          merchantCode = '1EEB5A9C59231D858F6A6B9D1FB34F9094C5BBAB',
-          currencyCode = "566", // e.g  566 for NGN
-          merchantSecret = "tnFadFHA3uJGsUxzf0I1TK/uHswGnst/RN1MlhPu9CQ=";
-
-      var config = new IswSdkConfig(
-        merchantId,
-        merchantKey,
-        merchantCode,
-        currencyCode,
-      );
-
-      // initialize the sdk
-      await IswMobileSdk.initialize(config);
-      // intialize with environment, default is Environment.TEST
-      // IswMobileSdk.initialize(config, Environment.SANDBOX);
-
-    } on PlatformException {}
-  }
-
-  Future<void> pay(int amount) async {
-    var customerId = "<customer-id>",
-        customerName = "$firstName  $lastName",
-        customerEmail = email,
-        customerMobile = phone,
-        // generate a unique random
-        // reference for each transaction
-        reference = ref;
-
-    // initialize amount
-    // amount expressed in lowest
-    // denomination (e.g. kobo): "N500.00" -> 50000
-    int amountInKobo = amount * 100;
-
-    // create payment info
-    var iswPaymentInfo = new IswPaymentInfo(customerId, customerName,
-        customerEmail, customerMobile, reference, amountInKobo);
-
-    // trigger payment
-    var result = await IswMobileSdk.pay(iswPaymentInfo);
-
-    // process result
-    if (result.hasValue) {
-      print(result);
-      // process result
-      Toast.show('jhgjhgwwe', context,
-          duration: Toast.LENGTH_LONG,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.red);
-    } else {
-      print(result);
-      Toast.show('Unable to complete payment', context,
-          duration: Toast.LENGTH_LONG,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.red);
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    initSdk();
     getDataCurrent();
   }
 

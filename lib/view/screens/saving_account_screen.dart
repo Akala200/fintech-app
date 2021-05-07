@@ -224,7 +224,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                         child: Icon(Icons.account_balance_wallet, color: Colors.white, size: 40.0,),
                                       ),
                                       Padding(
-                                        padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                                        padding: const EdgeInsets.only(top: 30.0, bottom: 5.0),
                                         child: Column(
                                           children: [
                                             Align(
@@ -239,7 +239,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                             SizedBox(height: 5.0,),
                                             Container(
                                               width: 160.0,
-                                              child: Text('₦$mainRealBalance.00',
+                                              child: Text('₦$mainRealBalance',
                                                   style: TextStyle( fontSize: 16.0,
                                                       color: Colors.white)),
                                             )
@@ -300,7 +300,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                             SizedBox(height: 5.0,),
                                             Container(
                                               width: 160.0,
-                                              child: Text('₦$balanceExtra.00',
+                                              child: Text('₦$balanceExtra',
                                                   style: TextStyle( fontSize: 16.0,
                                                       color: Colors.white)),
                                             )
@@ -380,7 +380,7 @@ class _SavingAccountScreenState extends State<SavingAccountScreen> {
                                                   flex: 5,
                                                   child: GestureDetector(
                                                   onTap: (){
-                                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => TransactionViewScreen(amount: snapshot.data[index]["amount"], description: snapshot.data[index]["description"], time:  snapshot.data[index]["created_at"], type: snapshot.data[index]["type"],)));
+                                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => TransactionViewScreen(amount: snapshot.data[index]["amount"].toString(), description: snapshot.data[index]["description"], time:  snapshot.data[index]["created_at"], type: snapshot.data[index]["type"],)));
                                                   },
                                                     child: Column(
                                                       children: [
